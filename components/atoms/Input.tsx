@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: ComponentSizes.input.height,
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,

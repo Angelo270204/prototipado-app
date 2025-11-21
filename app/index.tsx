@@ -1,8 +1,10 @@
 /**
- * Index Screen - Login/Role Selection
- * Pantalla inicial de la aplicación
+ * Index Screen - Entry Point
+ * Redirige a la pantalla de login
  */
 
-import LoginScreen from './screens/LoginScreen';
+import { Redirect } from 'expo-router';
 
-export default LoginScreen;
+export default function Index() {
+  return <Redirect href="/auth/login" />;
+}

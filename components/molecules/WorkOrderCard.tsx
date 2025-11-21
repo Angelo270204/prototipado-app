@@ -155,7 +155,7 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({ workOrder, onPress
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
     ...Shadows.medium,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.semibold,
-    color: Colors.background.darker,
+    color: Colors.background.primaryer,
   },
   operatorSection: {
     flexDirection: 'row',
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: Colors.background.darker,
+    backgroundColor: Colors.background.primaryer,
     borderRadius: BorderRadius.sm,
     marginRight: Spacing.sm,
     overflow: 'hidden',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.darker,
+    borderTopColor: Colors.background.primaryer,
   },
   qrLabel: {
     fontSize: Typography.sizes.caption,

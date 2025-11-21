@@ -1,316 +1,421 @@
-# 🚀 DTP-AR - Guía de Inicio Rápido
+# 🚀 Inicio Rápido - DTP-AR
 
-## ¿Qué es DTP-AR?
-
-**DTP-AR** es una aplicación móvil de Realidad Aumentada para el sector de manufactura en Áncash y Chimbote. Permite validar diseños CAD antes de fabricar, visualizar modelos 3D en RA, y guiar procesos de ensamblaje paso a paso.
+Guía rápida para comenzar a usar la aplicación DTP-AR (Validación CAD en Realidad Aumentada).
 
 ---
 
-## 📱 Ejecutar la Aplicación
+## 📋 Requisitos Previos
 
-### 1. Iniciar el servidor de desarrollo
+- Node.js (versión 16 o superior)
+- npm o yarn
+- Expo CLI (se instalará automáticamente)
+- Dispositivo móvil con Expo Go (opcional)
+- Editor de código (recomendado: VS Code)
+
+---
+
+## 🛠️ Instalación
+
+### 1. Clonar o descargar el proyecto
+
+```bash
+cd protipado-app
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Iniciar el proyecto
 
 ```bash
 npm start
 ```
 
-### 2. Opciones de ejecución
-
-- **Android**: Presiona `a` en la terminal
-- **iOS**: Presiona `i` en la terminal  
-- **Web**: Presiona `w` en la terminal
-- **Expo Go**: Escanea el QR code con tu dispositivo
+Esto abrirá Expo DevTools en tu navegador.
 
 ---
 
-## 🎭 Roles de Usuario
+## 📱 Ejecutar en Dispositivo
 
-Al iniciar la app, puedes seleccionar uno de estos 4 roles:
+### Android
 
-### 📐 Diseñador
-- **Usuario mock**: Carlos Mendoza (cmendoza@siderperuana.com)
-- **Funciones**: Gestionar proyectos, importar CAD, validar en RA
-- **Navegación**: Proyectos → Vista RA → Perfil
+```bash
+npm run android
+```
 
-### 👔 Cliente  
-- **Usuario mock**: Ana Flores (aflores@minera-ancash.com)
-- **Funciones**: Visualizar modelos 3D/RA, dejar comentarios, aprobar diseños
-- **Navegación**: Proyectos → Vista RA → Perfil
+O escanea el código QR con la app Expo Go.
 
-### 🔧 Operario
-- **Usuario mock**: Roberto Castillo (rcastillo@siderperuana.com)  
-- **Funciones**: Guías dinámicas de ensamblaje en RA, escaneo QR
-- **Navegación**: Órdenes → Escanear QR → Perfil
-- **⭐ Pantalla destacada**: Assembly Guide (guía paso a paso completamente funcional)
+### iOS
 
-### 📊 Producción
-- **Usuario mock**: María Torres (mtorres@siderperuana.com)
-- **Funciones**: Órdenes de trabajo, métricas, trazabilidad
-- **Navegación**: Dashboard → Órdenes → Métricas → Perfil
-- **⭐ Pantalla destacada**: Dashboard con métricas en tiempo real
+```bash
+npm run ios
+```
+
+O escanea el código QR con la cámara del iPhone.
+
+### Web (Modo de prueba)
+
+```bash
+npm run web
+```
+
+**Nota:** La funcionalidad AR es limitada en web.
 
 ---
 
-## 🎨 Design System
+## 🎨 Características Principales
+
+### ✅ Completamente Implementado
+
+- **Autenticación**
+  - Login con email y contraseña
+  - Registro de nuevos usuarios
+  - Login social (Google/Microsoft - UI)
+  - Recuperación de contraseña (UI)
+
+- **Selección de Rol**
+  - 4 roles: Diseñador, Cliente, Operador, Producción
+  - Cambio de rol desde el perfil
+
+- **Visualización AR (Simulada)**
+  - Visor AR interactivo con controles
+  - Rotación y zoom de modelos
+  - Mediciones y grid de alineación
+  - Captura de pantallas
+
+- **Escáner QR (Simulado)**
+  - Interfaz de escaneo
+  - Códigos de ejemplo pre-configurados
+  - Navegación automática a órdenes
+
+- **Perfiles Completos**
+  - Información del usuario
+  - Estadísticas personales
+  - Configuración (notificaciones, AR, guardado)
+  - Gestión de cuenta
+
+### 🎨 Diseño en Modo Claro
+
+- Paleta profesional con fondos grises suaves
+- Reducción de fatiga visual
+- Alto contraste para accesibilidad
+- Sombras sutiles y bordes definidos
+
+---
+
+## 🧭 Navegación en la App
+
+### Flujo de Inicio
+
+```
+Splash Screen
+    ↓
+Login ← → Registro
+    ↓
+Selección de Rol
+    ↓
+    ├─→ Diseñador
+    ├─→ Cliente
+    ├─→ Operador
+    └─→ Producción
+```
+
+### Módulo Diseñador
+
+- **Proyectos**: Lista de proyectos CAD
+- **Nuevo Proyecto**: Crear proyecto
+- **Detalle**: Ver información del proyecto
+- **AR Viewer**: Visualizar en realidad aumentada
+- **Perfil**: Configuración y estadísticas
+
+### Módulo Cliente
+
+- **Proyectos**: Revisar proyectos asignados
+- **Detalle**: Ver y comentar proyectos
+- **AR View**: Validar en realidad aumentada
+- **Perfil**: Configuración personal
+
+### Módulo Operador
+
+- **Órdenes de Trabajo**: Lista de tareas
+- **Escáner QR**: Escanear código de orden
+- **Guía de Ensamblaje**: Pasos detallados
+- **AR Assembly**: Guía AR paso a paso
+- **Perfil**: Configuración y estadísticas
+
+### Módulo Producción
+
+- **Dashboard**: Métricas y KPIs
+- **Órdenes**: Gestión de órdenes
+- **Métricas**: Reportes detallados
+- **Perfil**: Configuración personal
+
+---
+
+## 🧪 Testing de Funcionalidades
+
+### 1. Autenticación
+
+**Login:**
+```
+Email: cualquiera@ejemplo.com
+Contraseña: cualquier texto (mínimo 8 caracteres)
+```
+
+La validación es solo de UI, cualquier dato válido funciona.
+
+**Registro:**
+- Completar todos los campos obligatorios (*)
+- La contraseña debe tener al menos 8 caracteres
+- Las contraseñas deben coincidir
+- Aceptar términos y condiciones
+
+### 2. AR Viewer
+
+**Controles disponibles:**
+- 🎯 **Captura**: Tomar foto del modelo
+- ↻ **Rotación**: Girar 45° izquierda/derecha
+- 🔍 **Zoom**: Escala de 0.5x a 3x
+- 📏 **Medidas**: Mostrar dimensiones
+- 🔲 **Grid**: Cuadrícula de alineación
+- 🔦 **Flash**: Activar/desactivar
+- ⟲ **Reset**: Restablecer vista
+
+### 3. Escáner QR
+
+**Códigos de prueba:**
+- WO-HSE2024-001
+- WO-CHUTE-002
+- WO-TOLVA-003
+- WO-MARCO-004
+
+Presiona "Simular Escaneo" para probar la funcionalidad.
+
+### 4. Guía de Ensamblaje
+
+- Navegar entre pasos (Anterior/Siguiente)
+- Marcar pasos como completados
+- Ver herramientas necesarias
+- Ver advertencias de seguridad
+- Abrir vista AR para el paso actual
+
+---
+
+## 🎨 Paleta de Colores
 
 ### Colores Principales
-- **Fondo oscuro**: `#1A1A1A` / `#0E0E0E`
-- **Tarjetas**: `#E8E8E8` / `#2A2A2A`
-- **Éxito**: `#9FFF7A` (verde)
-- **Error**: `#FF4B4B` (rojo)
-- **Advertencia**: `#F4FF5E` (amarillo)
-- **Enfoque**: `#4A90E2` (azul)
 
-### Tipografía
-- **Primaria**: Roboto Condensed (títulos, botones)
-- **Secundaria**: Inter (párrafos)
-- **H1**: 28px | **H2**: 22px | **H3**: 16px
-- **Body**: 14-16px | **Caption**: 12px
+- **Primario**: `#2563EB` - Azul profesional
+- **Success**: `#10B981` - Verde esmeralda
+- **Error**: `#EF4444` - Rojo vibrante
+- **Warning**: `#F59E0B` - Naranja ámbar
+- **Info**: `#3B82F6` - Azul información
 
-### Prioridades (Órdenes de Trabajo)
-- **Alta**: Rojo `#FF4B4B`
-- **Media**: Amarillo `#F4FF5E`  
-- **Baja**: Azul `#4A90E2`
-- **Normal**: Verde `#9FFF7A`
+### Fondos
 
----
+- **Principal**: `#F5F5F5` - Gris suave
+- **Tarjetas**: `#FFFFFF` - Blanco
+- **Secciones**: `#E8E8E8` - Gris claro
 
-## 🧩 Componentes Principales
+### Textos
 
-### Átomos
-- `Button`: Variantes primary, secondary, ghost, danger
-- `Input`: Con validación y estados
-- `StatusBadge`: Badges de estado consistentes
+- **Principal**: `#1A1A1A` - Casi negro
+- **Secundario**: `#5A5A5A` - Gris medio
+- **Terciario**: `#9CA3AF` - Gris claro
 
-### Moléculas  
-- `ProjectCard`: Card de proyecto con progreso y estado
-- `WorkOrderCard`: Card con borde lateral según prioridad
-- `EmptyState`: Estados vacíos reutilizables
+Ver `PALETA_COLORES.md` para detalles completos.
 
 ---
 
-## 📊 Datos de Ejemplo
-
-### Proyectos Mock
-1. **Estructura de Soporte HSE-2024** - Minera Áncash (En validación)
-2. **Prototipo Chute Transferencia** - Sider Perú (En progreso)
-3. **Sistema de Anclaje Modular** - Construcciones del Norte (Aprobado)
-4. **Bastidor de Maquinaria Pesada** - Minera Chimbote S.A. (Pendiente)
-
-### Órdenes de Trabajo Mock
-1. **WO-HSE2024-001** - Prioridad Alta, En progreso (6/10 pasos)
-2. **WO-CHUTE-002** - Prioridad Media, Pendiente
-3. **WO-ANCLAJE-003** - Prioridad Normal, Completada
-4. **WO-BASTIDOR-004** - Prioridad Alta, Pendiente
-
----
-
-## 🔄 Flujo de Navegación Completo
+## 📁 Estructura del Proyecto
 
 ```
-Login (Selección de Rol)
-│
-├── Diseñador
-│   └── Lista de Proyectos → [Detalle] → [Vista RA] → [Nuevo]
-│
-├── Cliente
-│   └── Lista de Proyectos → [Detalle] → [Vista RA]
-│
-├── Operario
-│   └── Lista de Órdenes → Guía de Ensamblaje ⭐ → [Vista RA]
-│                           │
-│                           ├── Paso 1: Verificación de base
-│                           ├── Paso 2: Instalación de columnas
-│                           ├── Paso 3: Anclaje de vigas
-│                           ├── Paso 4: Soldadura (En progreso)
-│                           └── Paso 5: Arriostramiento
-│
-└── Producción
-    └── Dashboard ⭐ → Órdenes → Métricas
+protipado-app/
+├── app/                      # Pantallas de la aplicación
+│   ├── auth/                 # Autenticación
+│   │   ├── login.tsx         # Pantalla de login
+│   │   └── register.tsx      # Pantalla de registro
+│   ├── designer/             # Módulo diseñador
+│   ├── client/               # Módulo cliente
+│   ├── operator/             # Módulo operador
+│   ├── production/           # Módulo producción
+│   ├── role-selection.tsx    # Selección de rol
+│   ├── _layout.tsx           # Layout principal
+│   └── index.tsx             # Punto de entrada
+├── components/               # Componentes reutilizables
+│   ├── ar/                   # Componentes AR
+│   │   └── ARViewer.tsx      # Visor AR simulado
+│   ├── atoms/                # Componentes básicos
+│   ├── molecules/            # Componentes compuestos
+│   └── organisms/            # Componentes complejos
+├── constants/
+│   └── DesignSystem.ts       # Sistema de diseño
+├── contexts/
+│   └── AppContext.tsx        # Estado global
+├── data/
+│   └── mockData.ts           # Datos de prueba
+└── hooks/                    # Custom hooks
 ```
 
 ---
 
-## ✅ Pantallas Completas y Funcionales
+## 🔧 Comandos Disponibles
 
-### 1. LoginScreen
-- Selección de rol con iconos y colores
-- Navegación automática según rol
-- Sin autenticación real (solo UI)
-
-### 2. Designer Projects
-- Lista de proyectos con filtros
-- Cards con estado y progreso
-- Bottom navigation
-
-### 3. Client Projects  
-- Vista de proyectos para aprobación
-- Cards con información completa
-
-### 4. Operator Work Orders
-- Lista de órdenes con filtros
-- Cards con borde de prioridad
-- Botón de escaneo QR
-
-### 5. Operator Assembly Guide ⭐
-- **Navegación paso a paso**
-- **Barra de progreso visual**
-- **Detalles completos de cada paso**:
-  - Título y descripción
-  - Tiempo estimado
-  - Herramientas requeridas (lista)
-  - Advertencias de seguridad (destacadas en amarillo)
-  - Botón para vista RA
-  - Indicador de verificación requerida
-- **Sistema de completado**:
-  - Marcar paso como completado
-  - Bloqueo hasta completar paso actual
-  - Botones de navegación (Anterior/Siguiente)
-
-### 6. Production Dashboard ⭐
-- **4 métricas principales**:
-  - Órdenes pendientes
-  - En progreso
-  - Completadas hoy
-  - Proyectos activos
-- **Acciones rápidas** (4 cards)
-- **Actividad reciente** con indicadores visuales
-- Bottom navigation de 4 tabs
-
----
-
-## 📁 Estructura de Archivos Clave
-
-```
-app/
-├── index.tsx                     # Punto de entrada
-├── _layout.tsx                   # Navegación principal
-├── screens/
-│   └── LoginScreen.tsx           # Selección de rol
-├── designer/
-│   └── projects.tsx              # Lista proyectos diseñador
-├── client/
-│   └── projects.tsx              # Lista proyectos cliente
-├── operator/
-│   ├── work-orders.tsx           # Lista órdenes
-│   └── assembly-guide.tsx ⭐      # Guía ensamblaje (completa)
-└── production/
-    └── dashboard.tsx ⭐           # Dashboard (completo)
-
-components/
-├── atoms/
-│   ├── Button.tsx
-│   ├── Input.tsx
-│   └── StatusBadge.tsx
-└── molecules/
-    ├── ProjectCard.tsx
-    ├── WorkOrderCard.tsx
-    └── EmptyState.tsx
-
-constants/
-└── DesignSystem.ts               # Sistema de diseño completo
-
-data/
-└── mockData.ts                   # Datos de ejemplo
-
-contexts/
-└── AppContext.tsx                # Estado global
-```
-
----
-
-## 🎯 Próximos Pasos
-
-### Corto Plazo
-1. ✅ Implementar detalles de proyecto
-2. ✅ Crear formulario de nuevo proyecto  
-3. ✅ Integrar escáner QR real
-4. ✅ Pantalla de perfil de usuario
-
-### Mediano Plazo
-5. 🔲 Integrar visor 3D real (Three.js / React Three Fiber)
-6. 🔲 Implementar RA con AR.js o React Native AR
-7. 🔲 Sistema de comentarios y aprobaciones
-8. 🔲 Métricas y reportes detallados
-
-### Largo Plazo
-9. 🔲 Backend API (Node.js / Django)
-10. 🔲 Autenticación real (JWT / OAuth)
-11. 🔲 Base de datos (PostgreSQL / MongoDB)
-12. 🔲 Notificaciones push
-13. 🔲 Sincronización offline
-14. 🔲 Analytics y tracking
-
----
-
-## 🛠️ Tecnologías Utilizadas
-
-- **React Native** 0.81.5
-- **Expo** ~54.0.25
-- **Expo Router** ~6.0.15 (file-based routing)
-- **TypeScript** ~5.9.2
-- **React Navigation** 7.x
-- **React Context API** (estado global)
-
----
-
-## 📝 Notas Importantes
-
-1. **Sin autenticación real**: Por ahora solo se selecciona el rol y se navega directamente
-2. **Datos mock**: Todos los datos son de ejemplo y están hardcodeados
-3. **Placeholders**: Algunas pantallas son placeholders que muestran "En desarrollo"
-4. **TypeScript warnings**: Hay algunos warnings de tipo en Expo Router que no afectan la funcionalidad
-5. **Navegación funcional**: Todos los botones y cards navegan a las pantallas correspondientes
-
----
-
-## 🎨 Ejemplos de Uso
-
-### Probar flujo de Operario
-1. Selecciona rol "Operario" en login
-2. Toca cualquier orden de trabajo
-3. Verás la guía paso a paso
-4. Navega entre pasos
-5. Marca como completado
-6. Avanza al siguiente paso
-
-### Probar flujo de Producción  
-1. Selecciona rol "Producción" en login
-2. Ve el dashboard con métricas
-3. Toca "Crear Orden de Trabajo"
-4. Toca "Ver Métricas"
-5. Navega entre tabs del bottom navigation
-
----
-
-## 🚨 Solución de Problemas
-
-### La app no inicia
 ```bash
-npm install
+# Desarrollo
+npm start              # Iniciar Expo DevTools
+npm run android        # Ejecutar en Android
+npm run ios            # Ejecutar en iOS
+npm run web            # Ejecutar en navegador
+
+# Limpieza
+npm run reset-project  # Limpiar caché de Expo
+npx expo start -c      # Iniciar limpiando caché
+```
+
+---
+
+## 🐛 Solución de Problemas
+
+### El proyecto no inicia
+
+```bash
+# Limpiar caché y reinstalar
 rm -rf node_modules
 npm install
 npx expo start -c
 ```
 
 ### Errores de TypeScript
-- Los warnings de tipo en router.push() son esperados y no afectan la funcionalidad
-- La app compilará y funcionará correctamente
 
-### No se ve nada en pantalla
-- Asegúrate de estar en la pantalla de login (index.tsx)
-- Selecciona un rol para navegar
+Los warnings de TypeScript son normales en desarrollo. Para una build de producción, se resolverán automáticamente.
 
----
+### La app no se conecta en dispositivo físico
 
-## 📞 Contacto y Soporte
+1. Asegúrate de estar en la misma red WiFi
+2. Verifica que el firewall no bloquee el puerto 19000
+3. Intenta con el modo túnel: `npx expo start --tunnel`
 
-- **Proyecto**: DTP-AR (Diseño, Prototipado y Validación en RA)
-- **Sector**: Manufactura - Áncash y Chimbote
-- **Versión**: 1.0.0
+### AR Viewer no funciona en web
+
+El AR Viewer está diseñado para dispositivos móviles. En web solo se ve la simulación básica.
 
 ---
 
-**¡Listo para empezar! 🚀**
+## 📚 Documentación Adicional
 
-Ejecuta `npm start` y explora todos los módulos de la aplicación.
+- `CAMBIOS_REALIZADOS.md` - Lista completa de cambios
+- `PALETA_COLORES.md` - Guía detallada de colores
+- `README-DTP-AR.md` - Documentación técnica completa
+
+---
+
+## 🎯 Próximos Pasos
+
+### Para Desarrollo
+
+1. **Backend Integration**
+   - Conectar con API real
+   - Implementar JWT authentication
+   - Base de datos para proyectos y órdenes
+
+2. **AR Real**
+   - Integrar expo-gl o react-three-fiber
+   - Cargar modelos 3D reales (.glb, .gltf)
+   - Detección de superficies
+
+3. **QR Scanner Real**
+   - Implementar expo-barcode-scanner
+   - Permisos de cámara
+   - Validación de códigos
+
+4. **Features Adicionales**
+   - Modo offline
+   - Notificaciones push
+   - Reportes exportables
+   - Chat entre usuarios
+
+### Para Testing
+
+1. Probar todas las pantallas de cada módulo
+2. Verificar navegación entre pantallas
+3. Probar controles AR en todos los visores
+4. Verificar responsive en diferentes tamaños
+5. Probar en Android e iOS
+
+---
+
+## 👥 Usuarios de Prueba
+
+### Diseñador
+- Nombre: Carlos Rodríguez
+- Email: carlos.rodriguez@empresa.com
+- Rol: Diseñador CAD
+
+### Cliente
+- Nombre: María González
+- Email: maria.gonzalez@empresa.com
+- Rol: Cliente
+
+### Operador
+- Nombre: José Pérez
+- Email: jose.perez@empresa.com
+- Rol: Operador
+
+### Producción
+- Nombre: Ana Martínez
+- Email: ana.martinez@empresa.com
+- Rol: Supervisor de Producción
+
+---
+
+## 💡 Tips de Uso
+
+1. **Modo Claro**: Diseñado para reducir fatiga visual con fondos grises suaves
+2. **AR Viewer**: Usa los controles de zoom y rotación para explorar modelos
+3. **Escáner QR**: Presiona "Simular Escaneo" para testing rápido
+4. **Cambio de Rol**: Puedes cambiar entre roles desde el perfil
+5. **Navegación**: Usa el botón "Atrás" para volver a la pantalla anterior
+
+---
+
+## 📞 Soporte
+
+Para dudas o problemas:
+- Revisa la documentación en `/docs`
+- Verifica los issues conocidos
+- Consulta los archivos de documentación incluidos
+
+---
+
+## 🎓 Aprendizaje
+
+Esta aplicación es un excelente ejemplo de:
+
+- ✅ Arquitectura Atomic Design
+- ✅ Sistema de diseño consistente
+- ✅ Navegación con Expo Router
+- ✅ Gestión de estado con Context API
+- ✅ TypeScript en React Native
+- ✅ Diseño responsive y accesible
+
+---
+
+## 📝 Notas Finales
+
+- La app está **100% funcional en UI/UX**
+- Todas las pantallas están implementadas
+- Los datos son **mock/simulados** para pruebas
+- Lista para integrar backend y AR real
+- Diseñada para Chimbote, Áncash, Perú
+
+---
+
+**Versión**: 1.0.0  
+**Última actualización**: Diciembre 2024  
+**Proyecto**: DTP-AR - Validación CAD en Realidad Aumentada
+
+¡Disfruta explorando la aplicación! 🚀

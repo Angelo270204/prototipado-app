@@ -64,7 +64,7 @@ export default function ClientProjectsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   header: {
     paddingHorizontal: Spacing.lg,
@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     paddingVertical: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.darker,
+    borderTopColor: Colors.background.primaryer,
   },
   navItem: {
     flex: 1,

@@ -12,12 +12,12 @@ import {
   TextStyle,
   ActivityIndicator,
 } from 'react-native';
-import { Colors, Typography, ComponentSizes, BorderRadius } from '@/constants/DesignSystem';
+import { Colors, Typography, ComponentSizes, BorderRadius, Shadows } from '@/constants/DesignSystem';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
@@ -36,8 +36,12 @@ export const Button: React.FC<ButtonProps> = ({
   style,
 }) => {
   const getButtonStyle = (): ViewStyle => {
+    const height = size === 'small' ? ComponentSizes.button.small : 
+                   size === 'large' ? ComponentSizes.button.large : 
+                   ComponentSizes.button.medium;
+
     const baseStyle: ViewStyle = {
-      height: ComponentSizes.button.height,
+      height,
       minWidth: ComponentSizes.button.minWidth,
       paddingHorizontal: size === 'small' ? 16 : size === 'large' ? 32 : 24,
       borderRadius: BorderRadius.md,
@@ -54,14 +58,15 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.text.disabled : Colors.success,
+          backgroundColor: disabled ? Colors.text.disabled : Colors.primary.main,
+          ...(!disabled && Shadows.small),
         };
       case 'secondary':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.background.cardDark : Colors.background.cardDark,
+          backgroundColor: Colors.background.secondary,
           borderWidth: 1,
-          borderColor: disabled ? Colors.text.disabled : Colors.text.secondary,
+          borderColor: disabled ? Colors.text.disabled : Colors.background.border,
         };
       case 'ghost':
         return {
@@ -71,7 +76,14 @@ export const Button: React.FC<ButtonProps> = ({
       case 'danger':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.text.disabled : Colors.error,
+          backgroundColor: disabled ? Colors.text.disabled : Colors.error.main,
+          ...(!disabled && Shadows.small),
+        };
+      case 'success':
+        return {
+          ...baseStyle,
+          backgroundColor: disabled ? Colors.text.disabled : Colors.success.main,
+          ...(!disabled && Shadows.small),
         };
       default:
         return baseStyle;
@@ -88,22 +100,27 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return {
           ...baseStyle,
-          color: Colors.background.darker,
+          color: Colors.primary.contrast,
         };
       case 'secondary':
         return {
           ...baseStyle,
-          color: Colors.text.primary,
+          color: disabled ? Colors.text.disabled : Colors.text.primary,
         };
       case 'ghost':
         return {
           ...baseStyle,
-          color: disabled ? Colors.text.disabled : Colors.text.primary,
+          color: disabled ? Colors.text.disabled : Colors.primary.main,
         };
       case 'danger':
         return {
           ...baseStyle,
-          color: Colors.text.primary,
+          color: Colors.primary.contrast,
+        };
+      case 'success':
+        return {
+          ...baseStyle,
+          color: Colors.primary.contrast,
         };
       default:
         return baseStyle;
@@ -119,7 +136,9 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? Colors.background.darker : Colors.text.primary}
+          color={variant === 'primary' || variant === 'danger' || variant === 'success' 
+            ? Colors.primary.contrast 
+            : Colors.text.primary}
         />
       ) : (
         <Text style={getTextStyle()}>{title}</Text>

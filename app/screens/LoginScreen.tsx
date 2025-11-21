@@ -124,7 +124,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   roleCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.background.darker,
+    backgroundColor: Colors.background.primaryer,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
     paddingTop: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.cardDark,
+    borderTopColor: Colors.background.secondary,
   },
   footerText: {
     fontSize: Typography.sizes.caption,

@@ -1,92 +1,65 @@
 /**
- * Vista RA (Cliente)
- * Pantalla placeholder - pendiente de implementación
+ * Client AR View
+ * Vista de Realidad Aumentada para clientes
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing } from '@/constants/DesignSystem';
-import { Button } from '@/components/atoms/Button';
+import ARViewer from '@/components/ar/ARViewer';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function PlaceholderScreen() {
+export default function ClientARViewScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const [captureCount, setCaptureCount] = useState(0);
+
+  const modelName = params.modelName as string || 'Proyecto CAD';
+
+  const handleClose = () => {
+    router.back();
+  };
+
+  const handleCapture = () => {
+    setCaptureCount(prev => prev + 1);
+    Alert.alert(
+      'Captura Guardada',
+      `Se ha guardado la captura #${captureCount + 1}. Puedes adjuntarla en tus comentarios.`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleMeasure = () => {
+    Alert.alert(
+      'Mediciones Habilitadas',
+      'Ahora puedes ver las medidas del proyecto para validar dimensiones',
+      [{ text: 'Entendido' }]
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Atrás</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.icon}>🚧</Text>
-        <Text style={styles.title}>Vista RA (Cliente)</Text>
-        <Text style={styles.subtitle}>Esta pantalla está en desarrollo</Text>
-        <Text style={styles.description}>
-          La funcionalidad completa estará disponible próximamente.
-        </Text>
-
-        <Button
-          title="Volver"
-          onPress={() => router.back()}
-          variant="primary"
-          style={styles.button}
-        />
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <ARViewer
+        modelName={modelName}
+        onClose={handleClose}
+        onCapture={handleCapture}
+        onMeasure={handleMeasure}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
-  },
-  header: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-  },
-  backButton: {
-    marginBottom: Spacing.sm,
-  },
-  backButtonText: {
-    fontSize: Typography.sizes.body,
-    color: Colors.success,
-    fontWeight: Typography.weights.semibold,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-  },
-  icon: {
-    fontSize: 64,
-    marginBottom: Spacing.lg,
-  },
-  title: {
-    fontSize: Typography.sizes.h1,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  subtitle: {
-    fontSize: Typography.sizes.h3,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: Spacing.md,
-  },
-  description: {
-    fontSize: Typography.sizes.body,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-  },
-  button: {
-    minWidth: 200,
+    backgroundColor: '#000000',
   },
 });

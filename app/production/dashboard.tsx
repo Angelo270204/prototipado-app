@@ -136,7 +136,7 @@ export default function ProductionDashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   scrollContent: {
     paddingBottom: 100,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   actionCard: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   activityCard: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
   },
@@ -246,10 +246,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     paddingVertical: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.darker,
+    borderTopColor: Colors.background.primaryer,
   },
   navItem: {
     flex: 1,

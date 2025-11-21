@@ -42,7 +42,7 @@ export default function PlaceholderScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   header: {
     paddingHorizontal: Spacing.lg,

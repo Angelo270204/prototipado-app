@@ -97,7 +97,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onPress }) =>
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.semibold,
-    color: Colors.background.darker,
+    color: Colors.background.primaryer,
   },
   progressSection: {
     flexDirection: 'row',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: Colors.background.darker,
+    backgroundColor: Colors.background.primaryer,
     borderRadius: BorderRadius.sm,
     marginRight: Spacing.sm,
     overflow: 'hidden',
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   validationBadge: {
     marginTop: Spacing.sm,
     padding: Spacing.sm,
-    backgroundColor: Colors.background.darker,
+    backgroundColor: Colors.background.primaryer,
     borderRadius: BorderRadius.sm,
     borderLeftWidth: 3,
     borderLeftColor: Colors.warning,

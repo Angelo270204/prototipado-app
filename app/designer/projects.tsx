@@ -113,7 +113,7 @@ export default function DesignerProjectsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.semibold,
-    color: Colors.background.darker,
+    color: Colors.background.primaryer,
   },
   filtersContainer: {
     flexDirection: 'row',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: 20,
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
   },
   filterChipActive: {
     backgroundColor: Colors.success,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   },
   filterTextActive: {
-    color: Colors.background.darker,
+    color: Colors.background.primaryer,
     fontWeight: Typography.weights.semibold,
   },
   listContent: {
@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     paddingVertical: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.darker,
+    borderTopColor: Colors.background.primaryer,
   },
   navItem: {
     flex: 1,

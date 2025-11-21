@@ -192,14 +192,14 @@ export default function AssemblyGuideScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: Colors.background.primary,
   },
   header: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.background.cardDark,
+    borderBottomColor: Colors.background.secondary,
   },
   backButton: {
     marginBottom: Spacing.sm,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.sm,
     marginRight: Spacing.sm,
     overflow: 'hidden',
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontSize: Typography.sizes.h2,
     fontWeight: Typography.weights.bold,
-    color: Colors.background.darker,
+    color: Colors.background.primaryer,
   },
   stepTitleContainer: {
     flex: 1,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   },
   descriptionCard: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeight.relaxed * Typography.sizes.body,
   },
   toolsCard: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   },
   warningsCard: {
-    backgroundColor: Colors.background.darker,
+    backgroundColor: Colors.background.primaryer,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.md,
   },
   verificationCard: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     borderLeftWidth: 4,
@@ -365,9 +365,9 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   bottomActions: {
-    backgroundColor: Colors.background.cardDark,
+    backgroundColor: Colors.background.secondary,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.darker,
+    borderTopColor: Colors.background.primaryer,
     padding: Spacing.md,
   },
   actionButtons: {

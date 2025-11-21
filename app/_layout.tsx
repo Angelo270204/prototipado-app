@@ -3,31 +3,50 @@
  * Configuración principal de navegación y contexto global
  */
 
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { AppProvider } from '@/contexts/AppContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/DesignSystem';
+
+// Tema claro personalizado
+const LightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: Colors.primary.main,
+    background: Colors.background.primary,
+    card: Colors.background.secondary,
+    text: Colors.text.primary,
+    border: Colors.background.border,
+    notification: Colors.error.main,
+  },
+};
 
 export const unstable_settings = {
   initialRouteName: 'index',
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <AppProvider>
-      <ThemeProvider value={DarkTheme}>
+      <ThemeProvider value={LightTheme}>
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: '#1A1A1A' },
+            contentStyle: { backgroundColor: Colors.background.primary },
           }}
         >
-          {/* Login / Role Selection */}
+          {/* Entry Point */}
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          
+          {/* Authentication Screens */}
+          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+          
+          {/* Role Selection */}
+          <Stack.Screen name="role-selection" options={{ headerShown: false }} />
           
           {/* Designer Screens */}
           <Stack.Screen name="designer/projects" options={{ headerShown: false }} />
@@ -55,7 +74,7 @@ export default function RootLayout() {
           <Stack.Screen name="production/metrics" options={{ headerShown: false }} />
           <Stack.Screen name="production/profile" options={{ headerShown: false }} />
         </Stack>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
       </ThemeProvider>
     </AppProvider>
   );
