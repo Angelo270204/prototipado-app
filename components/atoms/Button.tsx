@@ -58,15 +58,15 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.text.disabled : Colors.primary.main,
+          backgroundColor: disabled ? Colors.grays.dark : Colors.base.blackPrimary,
           ...(!disabled && Shadows.small),
         };
       case 'secondary':
         return {
           ...baseStyle,
-          backgroundColor: Colors.background.secondary,
+          backgroundColor: Colors.base.whitePrimary,
           borderWidth: 1,
-          borderColor: disabled ? Colors.text.disabled : Colors.background.border,
+          borderColor: disabled ? Colors.grays.medium : Colors.grays.dark,
         };
       case 'ghost':
         return {
@@ -76,13 +76,13 @@ export const Button: React.FC<ButtonProps> = ({
       case 'danger':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.text.disabled : Colors.error.main,
+          backgroundColor: disabled ? Colors.grays.dark : Colors.error.main,
           ...(!disabled && Shadows.small),
         };
       case 'success':
         return {
           ...baseStyle,
-          backgroundColor: disabled ? Colors.text.disabled : Colors.success.main,
+          backgroundColor: disabled ? Colors.grays.dark : Colors.success.main,
           ...(!disabled && Shadows.small),
         };
       default:
@@ -100,27 +100,27 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return {
           ...baseStyle,
-          color: Colors.primary.contrast,
+          color: Colors.base.whitePrimary,
         };
       case 'secondary':
         return {
           ...baseStyle,
-          color: disabled ? Colors.text.disabled : Colors.text.primary,
+          color: disabled ? Colors.text.disabled : Colors.base.blackPrimary,
         };
       case 'ghost':
         return {
           ...baseStyle,
-          color: disabled ? Colors.text.disabled : Colors.primary.main,
+          color: disabled ? Colors.text.disabled : Colors.base.blackPrimary,
         };
       case 'danger':
         return {
           ...baseStyle,
-          color: Colors.primary.contrast,
+          color: Colors.base.whitePrimary,
         };
       case 'success':
         return {
           ...baseStyle,
-          color: Colors.primary.contrast,
+          color: Colors.base.blackPrimary,
         };
       default:
         return baseStyle;
@@ -136,9 +136,11 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' || variant === 'danger' || variant === 'success' 
-            ? Colors.primary.contrast 
-            : Colors.text.primary}
+          color={variant === 'primary' || variant === 'danger'
+            ? Colors.base.whitePrimary
+            : variant === 'success'
+            ? Colors.base.blackPrimary
+            : Colors.base.blackPrimary}
         />
       ) : (
         <Text style={getTextStyle()}>{title}</Text>

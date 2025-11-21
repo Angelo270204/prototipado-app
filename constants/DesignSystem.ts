@@ -1,88 +1,146 @@
 /**
  * DTP-AR Design System
- * Sistema de diseño para aplicación de Realidad Aumentada en manufactura
- * Modo Claro - Optimizado para reducir fatiga visual
+ * Paleta Oficial: "Negro + Blanco Industrial"
+ * Optimizado para modo claro con contraste industrial
  */
 
-// COLORES PRINCIPALES - MODO CLARO
+// COLORES PRINCIPALES - PALETA NEGRO + BLANCO INDUSTRIAL
 export const Colors = {
-  // Fondos
+  // 1. COLORES BASE (Identidad Principal)
+  base: {
+    blackPrimary: '#1A1A1A',    // Negro industrial - fondos, botones, headers
+    whitePrimary: '#FFFFFF',    // Blanco puro - paneles, tarjetas, inputs
+  },
+
+  // 2. GRISES NECESARIOS (Variaciones tonales)
+  grays: {
+    light: '#F2F2F2',           // Superficie/Paneles - panel de formularios
+    medium: '#D9D9D9',          // Bordes e Inputs - bordes, separadores
+    dark: '#4A4A4A',            // Textos secundarios/iconos
+  },
+
+  // 3. COLORES FUNCIONALES (Estados del sistema)
+  functional: {
+    success: '#9CFF2E',         // Verde neón - Aprobado, operaciones exitosas
+    error: '#FF6B6B',           // Rojo suave - Pendiente Revisión, errores
+    warning: '#FFE249',         // Amarillo brillante - Pendiente Revisión (alternativo)
+    info: '#4A9EFF',            // Azul brillante - En Validación, información
+  },
+
+  // FONDOS
   background: {
-    primary: '#F5F5F5',      // Fondo principal - gris muy claro
-    secondary: '#FFFFFF',     // Fondo de tarjetas - blanco
-    tertiary: '#E8E8E8',      // Fondo de secciones - gris claro
-    hover: '#ECECEC',         // Hover sobre elementos
-    border: '#D1D5DB',        // Bordes sutiles
+    primary: '#1A1A1A',         // Fondo principal - negro industrial
+    secondary: '#F2F2F2',       // Fondo de paneles y tarjetas
+    tertiary: '#FFFFFF',        // Fondo blanco puro para contenido
+    card: '#1A1A1A',            // Tarjetas oscuras
+    hover: '#E8E8E8',           // Hover sobre elementos
+    border: '#D9D9D9',          // Bordes sutiles
+    input: '#FFFFFF',           // Fondo de inputs
   },
   
-  // Textos
+  // TEXTOS
   text: {
-    primary: '#1A1A1A',       // Texto principal - casi negro
-    secondary: '#5A5A5A',     // Texto secundario - gris medio
-    tertiary: '#9CA3AF',      // Texto terciario - gris claro
-    disabled: '#D1D5DB',      // Texto deshabilitado
-    onPrimary: '#FFFFFF',     // Texto sobre colores primarios
+    primary: '#1A1A1A',         // Texto principal sobre fondos claros
+    secondary: '#4A4A4A',       // Texto secundario - iconos, labels
+    tertiary: '#6B7280',        // Texto terciario
+    disabled: '#9CA3AF',        // Texto deshabilitado
+    onDark: '#FFFFFF',          // Texto sobre fondos oscuros
+    onCard: '#FFFFFF',          // Texto sobre tarjetas oscuras
+    label: '#D1D1D1',           // Labels sobre fondo oscuro
   },
   
-  // Colores de marca y acento
+  // COLORES DE MARCA Y ACENTO
   primary: {
-    main: '#2563EB',          // Azul profesional
-    light: '#3B82F6',         // Azul claro
-    dark: '#1E40AF',          // Azul oscuro
-    contrast: '#FFFFFF',      // Texto sobre primario
+    main: '#1A1A1A',            // Negro industrial
+    light: '#2A2A2A',           // Negro más claro
+    dark: '#000000',            // Negro puro
+    contrast: '#FFFFFF',        // Contraste sobre oscuro
   },
   
-  // Estados
+  // ESTADOS
   success: {
-    main: '#10B981',          // Verde éxito
-    light: '#34D399',         // Verde claro
-    dark: '#059669',          // Verde oscuro
-    background: '#D1FAE5',    // Fondo suave
+    main: '#9FFF7A',            // Verde industrial
+    light: '#B5FF94',           // Verde claro
+    dark: '#7FE05A',            // Verde oscuro
+    background: '#E8FFE0',      // Fondo suave
   },
   
   error: {
-    main: '#EF4444',          // Rojo error
-    light: '#F87171',         // Rojo claro
-    dark: '#DC2626',          // Rojo oscuro
-    background: '#FEE2E2',    // Fondo suave
+    main: '#FF4B4B',            // Rojo alerta
+    light: '#FF6B6B',           // Rojo claro
+    dark: '#E03333',            // Rojo oscuro
+    background: '#FFE8E8',      // Fondo suave
   },
   
   warning: {
-    main: '#F59E0B',          // Naranja advertencia
-    light: '#FBBF24',         // Naranja claro
-    dark: '#D97706',          // Naranja oscuro
-    background: '#FEF3C7',    // Fondo suave
+    main: '#F4FF5E',            // Amarillo
+    light: '#F7FF8A',           // Amarillo claro
+    dark: '#E0EB3A',            // Amarillo oscuro
+    background: '#FFFEF0',      // Fondo suave
   },
   
   info: {
-    main: '#3B82F6',          // Azul información
-    light: '#60A5FA',         // Azul claro
-    dark: '#2563EB',          // Azul oscuro
-    background: '#DBEAFE',    // Fondo suave
+    main: '#4A90E2',            // Azul funcional
+    light: '#6BA5E8',           // Azul claro
+    dark: '#3A7BC8',            // Azul oscuro
+    background: '#E8F4FF',      // Fondo suave
   },
   
-  // Interacción
-  focus: '#2563EB',           // Color de foco
-  selected: '#EFF6FF',        // Fondo de selección
-  hover: '#F3F4F6',           // Hover genérico
-  active: '#E5E7EB',          // Estado activo
+  // INTERACCIÓN
+  focus: '#4A90E2',             // Color de foco - azul funcional
+  selected: '#E8F4FF',          // Fondo de selección
+  hover: '#E8E8E8',             // Hover genérico
+  active: '#D9D9D9',            // Estado activo
   
-  // Prioridades (para órdenes de trabajo)
+  // PRIORIDADES (para órdenes de trabajo)
   priority: {
-    urgent: '#EF4444',        // Urgente - rojo
-    high: '#F59E0B',          // Alta - naranja
-    medium: '#3B82F6',        // Media - azul
-    low: '#6B7280',           // Baja - gris
-    normal: '#10B981',        // Normal - verde
+    urgent: '#FF4B4B',          // Urgente - rojo
+    high: '#F4FF5E',            // Alta - amarillo
+    medium: '#4A90E2',          // Media - azul
+    low: '#4A4A4A',             // Baja - gris oscuro
+    normal: '#9FFF7A',          // Normal - verde
   },
   
-  // Estados de trabajo
+  // ESTADOS DE TRABAJO
   status: {
-    pending: '#F59E0B',       // Pendiente
-    inProgress: '#3B82F6',    // En progreso
-    completed: '#10B981',     // Completado
-    cancelled: '#6B7280',     // Cancelado
-    review: '#8B5CF6',        // En revisión
+    pending: '#F4FF5E',         // Pendiente - amarillo
+    inProgress: '#4A90E2',      // En progreso - azul
+    completed: '#9FFF7A',       // Completado - verde
+    cancelled: '#4A4A4A',       // Cancelado - gris
+    review: '#4A90E2',          // En revisión - azul
+  },
+
+  // COLORES ESPECÍFICOS PARA ROLES
+  roles: {
+    designer: '#1A1A1A',        // Negro industrial para diseñador
+    client: '#1A1A1A',          // Negro industrial para cliente
+    production: '#1A1A1A',      // Negro industrial para producción
+    operator: '#1A1A1A',        // Negro industrial para operador
+  },
+
+  // COLORES PARA ESTADÍSTICAS
+  stats: {
+    card: '#1A1A1A',            // Negro industrial para tarjetas
+    text: '#FFFFFF',            // Texto blanco
+    value: '#FFFFFF',           // Valores en blanco
+  },
+  
+  // COLORES PARA LOGIN/AUTH
+  auth: {
+    background: '#1A1A1A',      // Fondo oscuro - negro industrial
+    cardBackground: '#F2F2F2',  // Tarjeta de formulario - gris claro
+    inputBackground: '#FFFFFF', // Fondo de inputs - blanco puro
+    inputBorder: '#D9D9D9',     // Bordes de inputs - gris medio
+    inputText: '#1A1A1A',       // Texto en inputs - negro
+    inputIcon: '#4A4A4A',       // Iconos en inputs - gris oscuro
+    inputLabel: '#4A4A4A',      // Labels de inputs - gris oscuro
+    inputPlaceholder: '#9CA3AF',// Placeholder - gris claro
+    buttonBackground: '#1A1A1A',// Fondo de botón - negro industrial
+    buttonHover: '#000000',     // Hover de botón - negro puro
+    buttonText: '#FFFFFF',      // Texto de botón - blanco
+    title: '#FFFFFF',           // Título principal - blanco
+    subtitle: '#D9D9D9',        // Subtítulo - gris medio
+    linkText: '#4A4A4A',        // Texto de enlaces
   },
 };
 
@@ -90,9 +148,9 @@ export const Colors = {
 export const Typography = {
   // Familias
   fonts: {
-    primary: 'Inter',         // Fuente principal
+    primary: 'Inter',           // Fuente principal
     secondary: 'RobotoCondensed', // Fuente secundaria
-    mono: 'RobotoMono',       // Fuente monoespaciada
+    mono: 'RobotoMono',         // Fuente monoespaciada
     fallback: 'System',
   },
   
@@ -157,31 +215,31 @@ export const Shadows = {
   },
   small: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  large: {
+  medium: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
-  xlarge: {
+  large: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 8,
+  },
+  xlarge: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 12,
   },
 };
 
@@ -238,9 +296,9 @@ export const Animations = {
 
 // ACCESIBILIDAD
 export const Accessibility = {
-  minTouchTarget: 44,       // Tamaño mínimo de toque (iOS/Android guidelines)
-  minContrastRatio: 4.5,    // WCAG AA
-  minContrastRatioLarge: 3, // WCAG AA para texto grande
+  minTouchTarget: 44,         // Tamaño mínimo de toque (iOS/Android guidelines)
+  minContrastRatio: 4.5,      // WCAG AA
+  minContrastRatioLarge: 3,   // WCAG AA para texto grande
 };
 
 // BREAKPOINTS (para diseño responsive)

@@ -15,11 +15,11 @@ const LightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: Colors.primary.main,
-    background: Colors.background.primary,
-    card: Colors.background.secondary,
-    text: Colors.text.primary,
-    border: Colors.background.border,
+    primary: Colors.base.blackPrimary,
+    background: Colors.base.whitePrimary,
+    card: Colors.grays.light,
+    text: Colors.base.blackPrimary,
+    border: Colors.grays.medium,
     notification: Colors.error.main,
   },
 };
@@ -35,7 +35,7 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: Colors.background.primary },
+            contentStyle: { backgroundColor: Colors.base.whitePrimary },
           }}
         >
           {/* Entry Point */}

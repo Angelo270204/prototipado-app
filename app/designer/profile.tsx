@@ -1,6 +1,6 @@
 /**
  * Designer Profile Screen
- * Pantalla de perfil del diseñador con configuración y estadísticas
+ * Pantalla de perfil del diseñador - Rediseñada según mockup
  */
 
 import React, { useState } from 'react';
@@ -8,22 +8,33 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Image,
-  Switch,
   Alert,
+  Switch,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '@/constants/DesignSystem';
 
 export default function DesignerProfileScreen() {
-  const router = useRouter();
-  const [notifications, setNotifications] = useState(true);
-  const [arMode, setArMode] = useState(true);
-  const [autoSave, setAutoSave] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+
+  const handleEditProfile = () => {
+    Alert.alert(
+      'Editar Perfil',
+      '¿Qué deseas editar?',
+      [
+        { text: 'Nombre' },
+        { text: 'Email' },
+        { text: 'Teléfono' },
+        { text: 'Dirección' },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -40,192 +51,139 @@ export default function DesignerProfileScreen() {
     );
   };
 
-  const handleEditProfile = () => {
-    Alert.alert('Editar Perfil', 'Funcionalidad de edición próximamente disponible');
-  };
-
-  const handleChangePassword = () => {
-    Alert.alert('Cambiar Contraseña', 'Funcionalidad próximamente disponible');
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={Colors.base.blackPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Mi Perfil</Text>
-        <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-          <Ionicons name="create-outline" size={24} color={Colors.primary.main} />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Perfil</Text>
+        <View style={styles.placeholder} />
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Profile Info Card */}
-        <View style={styles.profileCard}>
+        {/* Avatar y Nombre */}
+        <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Ionicons name="person" size={48} color={Colors.primary.main} />
+            <View style={styles.avatarCircle}>
+              <Ionicons name="person" size={48} color={Colors.base.whitePrimary} />
             </View>
-            <TouchableOpacity style={styles.avatarBadge}>
-              <Ionicons name="camera" size={16} color={Colors.primary.contrast} />
-            </TouchableOpacity>
           </View>
+          <Text style={styles.userName}>Hola, Jhony Walker</Text>
+          <Text style={styles.userEmail}>jhony.walker@gmail.com</Text>
+        </View>
 
-          <Text style={styles.userName}>Carlos Rodríguez</Text>
-          <Text style={styles.userEmail}>carlos.rodriguez@empresa.com</Text>
-          <View style={styles.roleBadge}>
-            <Ionicons name="color-palette" size={16} color={Colors.primary.main} />
-            <Text style={styles.roleText}>Diseñador CAD</Text>
+        {/* Información Personal */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Información Personal</Text>
+
+          <View style={styles.infoCard}>
+            <View style={styles.infoItem}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="call-outline" size={20} color={Colors.base.whitePrimary} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Teléfono</Text>
+                <Text style={styles.infoValue}>+51 946 075 108</Text>
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoItem}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="location-outline" size={20} color={Colors.base.whitePrimary} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Dirección</Text>
+                <Text style={styles.infoValue}>El Acero</Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* Statistics */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Ionicons name="folder-outline" size={28} color={Colors.primary.main} />
-            <Text style={styles.statValue}>12</Text>
-            <Text style={styles.statLabel}>Proyectos</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Ionicons name="cube-outline" size={28} color={Colors.success.main} />
-            <Text style={styles.statValue}>8</Text>
-            <Text style={styles.statLabel}>Aprobados</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Ionicons name="time-outline" size={28} color={Colors.warning.main} />
-            <Text style={styles.statValue}>4</Text>
-            <Text style={styles.statLabel}>Pendientes</Text>
-          </View>
-        </View>
-
-        {/* Settings Section */}
+        {/* Configuración */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Configuración</Text>
 
-          <View style={styles.settingsCard}>
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Ionicons name="notifications-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.settingLabel}>Notificaciones</Text>
+          <View style={styles.configCard}>
+            <View style={styles.configItem}>
+              <View style={styles.configLeft}>
+                <View style={styles.iconContainerDark}>
+                  <Ionicons name="notifications-outline" size={20} color={Colors.base.whitePrimary} />
+                </View>
+                <Text style={styles.configLabel}>Notificaciones</Text>
               </View>
               <Switch
-                value={notifications}
-                onValueChange={setNotifications}
-                trackColor={{ false: Colors.background.border, true: Colors.primary.light }}
-                thumbColor={notifications ? Colors.primary.main : Colors.background.tertiary}
+                value={notificationsEnabled}
+                onValueChange={setNotificationsEnabled}
+                trackColor={{ false: Colors.grays.medium, true: Colors.functional.success }}
+                thumbColor={Colors.base.whitePrimary}
+                ios_backgroundColor={Colors.grays.medium}
               />
             </View>
 
             <View style={styles.divider} />
 
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Ionicons name="cube-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.settingLabel}>Modo AR por defecto</Text>
+            <View style={styles.configItem}>
+              <View style={styles.configLeft}>
+                <View style={styles.iconContainerDark}>
+                  <Ionicons name="shield-checkmark-outline" size={20} color={Colors.base.whitePrimary} />
+                </View>
+                <Text style={styles.configLabel}>Privacidad</Text>
               </View>
               <Switch
-                value={arMode}
-                onValueChange={setArMode}
-                trackColor={{ false: Colors.background.border, true: Colors.primary.light }}
-                thumbColor={arMode ? Colors.primary.main : Colors.background.tertiary}
+                value={privacyEnabled}
+                onValueChange={setPrivacyEnabled}
+                trackColor={{ false: Colors.grays.medium, true: Colors.functional.success }}
+                thumbColor={Colors.base.whitePrimary}
+                ios_backgroundColor={Colors.grays.medium}
               />
             </View>
 
             <View style={styles.divider} />
 
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Ionicons name="save-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.settingLabel}>Guardado automático</Text>
+            <View style={styles.configItem}>
+              <View style={styles.configLeft}>
+                <View style={styles.iconContainerDark}>
+                  <Ionicons name="moon-outline" size={20} color={Colors.base.whitePrimary} />
+                </View>
+                <Text style={styles.configLabel}>Modo Oscuro</Text>
               </View>
               <Switch
-                value={autoSave}
-                onValueChange={setAutoSave}
-                trackColor={{ false: Colors.background.border, true: Colors.primary.light }}
-                thumbColor={autoSave ? Colors.primary.main : Colors.background.tertiary}
+                value={darkModeEnabled}
+                onValueChange={setDarkModeEnabled}
+                trackColor={{ false: Colors.grays.medium, true: Colors.functional.success }}
+                thumbColor={Colors.base.whitePrimary}
+                ios_backgroundColor={Colors.grays.medium}
               />
             </View>
           </View>
         </View>
 
-        {/* Account Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Cuenta</Text>
+        {/* Botones de Acción */}
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={handleEditProfile}
+          >
+            <Text style={styles.editButtonText}>Editar Perfil</Text>
+          </TouchableOpacity>
 
-          <View style={styles.menuCard}>
-            <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="person-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Editar Perfil</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.menuItem} onPress={handleChangePassword}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="lock-closed-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Cambiar Contraseña</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/role-selection')}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="swap-horizontal-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Cambiar Rol</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* About Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Información</Text>
-
-          <View style={styles.menuCard}>
-            <TouchableOpacity style={styles.menuItem}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="help-circle-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Ayuda y Soporte</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.menuItem}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="document-text-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Términos y Condiciones</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.menuItem}>
-              <View style={styles.menuLeft}>
-                <Ionicons name="shield-checkmark-outline" size={24} color={Colors.text.primary} />
-                <Text style={styles.menuLabel}>Política de Privacidad</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.text.tertiary} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Version Info */}
@@ -234,223 +192,192 @@ export default function DesignerProfileScreen() {
           <Text style={styles.versionSubtext}>© 2024 - Chimbote, Áncash</Text>
         </View>
 
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={20} color={Colors.error.main} />
-          <Text style={styles.logoutText}>Cerrar Sesión</Text>
-        </TouchableOpacity>
+        <View style={{ height: 40 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.base.whitePrimary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.background.secondary,
-    ...Shadows.small,
+    paddingTop: 50,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.base.whitePrimary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.medium,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
+    width: 40,
+    height: 40,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.text.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+    fontStyle: 'italic',
   },
-  editButton: {
-    width: 44,
-    height: 44,
+  placeholder: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  profileSection: {
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scrollContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
-    paddingBottom: Spacing.xxxl,
-  },
-  profileCard: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-    ...Shadows.medium,
+    marginBottom: 32,
   },
   avatarContainer: {
-    position: 'relative',
-    marginBottom: Spacing.md,
+    marginBottom: 16,
   },
-  avatar: {
+  avatarCircle: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.functional.info,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: Colors.primary.main,
-  },
-  avatarBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary.main,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: Colors.background.secondary,
+    borderWidth: 4,
+    borderColor: Colors.grays.light,
   },
   userName: {
-    fontSize: Typography.sizes.h2,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
-    marginBottom: Spacing.xs,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+    marginBottom: 4,
   },
   userEmail: {
-    fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
-    marginBottom: Spacing.md,
-  },
-  roleBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.primary.main + '15',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.round,
-    gap: Spacing.xs,
-  },
-  roleText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.medium,
-    color: Colors.primary.main,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-    ...Shadows.small,
-  },
-  statValue: {
-    fontSize: Typography.sizes.h2,
-    fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
-    marginTop: Spacing.xs,
-  },
-  statLabel: {
-    fontSize: Typography.sizes.caption,
-    color: Colors.text.secondary,
-    marginTop: Spacing.xs,
+    fontSize: 14,
+    color: Colors.functional.info,
   },
   section: {
-    marginBottom: Spacing.lg,
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+    marginBottom: 12,
   },
-  settingsCard: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    ...Shadows.small,
+  infoCard: {
+    backgroundColor: Colors.base.whitePrimary,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.grays.medium,
   },
-  settingItem: {
+  infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
+    padding: 16,
   },
-  settingLeft: {
-    flexDirection: 'row',
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: Colors.base.blackPrimary,
     alignItems: 'center',
-    gap: Spacing.md,
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoContent: {
     flex: 1,
   },
-  settingLabel: {
-    fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
-    flex: 1,
+  infoLabel: {
+    fontSize: 12,
+    color: Colors.grays.dark,
+    marginBottom: 2,
   },
-  menuCard: {
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    ...Shadows.small,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.md,
-  },
-  menuLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    flex: 1,
-  },
-  menuLabel: {
-    fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
+  infoValue: {
+    fontSize: 14,
+    color: Colors.functional.info,
+    fontWeight: '600',
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.background.border,
+    backgroundColor: Colors.grays.light,
+    marginHorizontal: 16,
+  },
+  configCard: {
+    backgroundColor: Colors.base.whitePrimary,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.grays.medium,
+  },
+  configItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  configLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconContainerDark: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: Colors.base.blackPrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  configLabel: {
+    fontSize: 14,
+    color: Colors.base.blackPrimary,
+    fontWeight: '500',
+  },
+  actionsSection: {
+    marginTop: 8,
+    gap: 12,
+  },
+  editButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+  logoutButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
   },
   versionContainer: {
     alignItems: 'center',
-    marginVertical: Spacing.lg,
+    marginTop: 32,
   },
   versionText: {
-    fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
-    fontWeight: Typography.weights.medium,
+    fontSize: 12,
+    color: Colors.grays.dark,
+    fontWeight: '500',
   },
   versionSubtext: {
-    fontSize: Typography.sizes.caption,
-    color: Colors.text.tertiary,
-    marginTop: Spacing.xs,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.error.main + '30',
-    padding: Spacing.md,
-    gap: Spacing.sm,
-    ...Shadows.small,
-  },
-  logoutText: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.error.main,
+    fontSize: 11,
+    color: Colors.grays.dark,
+    marginTop: 4,
   },
 });

@@ -33,10 +33,10 @@ export const Input: React.FC<InputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
 
   const getBorderColor = () => {
-    if (error) return Colors.error;
-    if (success) return Colors.success;
-    if (isFocused) return Colors.focus;
-    return Colors.text.secondary;
+    if (error) return Colors.error.main;
+    if (success) return Colors.success.main;
+    if (isFocused) return Colors.functional.info;
+    return Colors.grays.medium;
   };
 
   return (
@@ -68,24 +68,24 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.medium,
-    color: Colors.text.primary,
+    color: Colors.text.secondary,
     marginBottom: Spacing.sm,
   },
   input: {
-    height: ComponentSizes.input.height,
-    backgroundColor: Colors.background.secondary,
+    height: ComponentSizes.input.medium,
+    backgroundColor: Colors.base.whitePrimary,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
+    color: Colors.base.blackPrimary,
   },
   inputError: {
-    borderColor: Colors.error,
+    borderColor: Colors.error.main,
   },
   errorText: {
     fontSize: Typography.sizes.caption,
-    color: Colors.error,
+    color: Colors.error.main,
     marginTop: Spacing.xs,
   },
   helperText: {

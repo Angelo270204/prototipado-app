@@ -31,41 +31,53 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, style }
       case 'success':
       case 'completed':
         return {
-          backgroundColor: Colors.success.background,
-          color: Colors.success.dark,
+          backgroundColor: Colors.functional.success,
+          color: Colors.base.blackPrimary,
         };
       case 'error':
         return {
-          backgroundColor: Colors.error.background,
-          color: Colors.error.dark,
+          backgroundColor: Colors.functional.error,
+          color: Colors.base.whitePrimary,
         };
       case 'warning':
+        return {
+          backgroundColor: Colors.functional.warning,
+          color: Colors.base.blackPrimary,
+        };
       case 'validation':
+        return {
+          backgroundColor: Colors.warning.main,
+          color: Colors.base.blackPrimary,
+        };
       case 'pending':
         return {
-          backgroundColor: Colors.warning.background,
-          color: Colors.warning.dark,
+          backgroundColor: Colors.functional.warning,
+          color: Colors.base.blackPrimary,
         };
       case 'info':
+        return {
+          backgroundColor: Colors.functional.info,
+          color: Colors.base.whitePrimary,
+        };
       case 'in_progress':
         return {
-          backgroundColor: Colors.info.background,
-          color: Colors.info.dark,
+          backgroundColor: Colors.functional.info,
+          color: Colors.base.whitePrimary,
         };
       case 'review':
         return {
-          backgroundColor: '#EDE9FE',
-          color: '#6B21A8',
+          backgroundColor: Colors.functional.info,
+          color: Colors.base.whitePrimary,
         };
       case 'cancelled':
         return {
-          backgroundColor: Colors.background.tertiary,
-          color: Colors.text.secondary,
+          backgroundColor: Colors.grays.dark,
+          color: Colors.base.whitePrimary,
         };
       default:
         return {
-          backgroundColor: Colors.background.tertiary,
-          color: Colors.text.secondary,
+          backgroundColor: Colors.grays.medium,
+          color: Colors.base.blackPrimary,
         };
     }
   };

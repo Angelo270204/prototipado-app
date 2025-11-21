@@ -10,8 +10,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
+  Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/DesignSystem';
 import { mockWorkOrders, mockProjects } from '@/data/mockData';
@@ -33,15 +34,57 @@ export default function ProductionDashboardScreen() {
     { label: 'Proyectos Activos', value: activeProjects, color: Colors.warning, icon: '📊' },
   ];
 
+  const handleCreateWorkOrder = () => {
+    Alert.alert(
+      'Crear Orden de Trabajo',
+      '¿Deseas crear una nueva orden de trabajo?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Crear',
+          onPress: () => {
+            Alert.alert('Éxito', 'Orden de trabajo creada exitosamente\nID: WO-2024-' + Math.floor(Math.random() * 1000));
+          },
+        },
+      ]
+    );
+  };
+
+  const handleManageResources = () => {
+    Alert.alert(
+      'Gestionar Recursos',
+      'Selecciona una opción:',
+      [
+        { text: 'Ver Operarios', onPress: () => Alert.alert('Operarios', '15 operarios disponibles') },
+        { text: 'Ver Materiales', onPress: () => Alert.alert('Materiales', 'Inventario actualizado') },
+        { text: 'Ver Equipos', onPress: () => Alert.alert('Equipos', '8 equipos en operación') },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
+  const handleReports = () => {
+    Alert.alert(
+      'Reportes',
+      'Selecciona el tipo de reporte:',
+      [
+        { text: 'Reporte Diario', onPress: () => Alert.alert('Reporte', 'Generando reporte diario...') },
+        { text: 'Reporte Semanal', onPress: () => Alert.alert('Reporte', 'Generando reporte semanal...') },
+        { text: 'Reporte Mensual', onPress: () => Alert.alert('Reporte', 'Generando reporte mensual...') },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
   const quickActions = [
-    { title: 'Crear Orden de Trabajo', icon: '➕', action: () => router.push('/production/work-orders') },
+    { title: 'Crear Orden de Trabajo', icon: '➕', action: handleCreateWorkOrder },
     { title: 'Ver Métricas', icon: '📈', action: () => router.push('/production/metrics') },
-    { title: 'Gestionar Recursos', icon: '👥', action: () => {} },
-    { title: 'Reportes', icon: '📄', action: () => {} },
+    { title: 'Gestionar Recursos', icon: '👥', action: handleManageResources },
+    { title: 'Reportes', icon: '📄', action: handleReports },
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
@@ -249,7 +292,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     paddingVertical: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.primaryer,
+    borderTopColor: Colors.background.secondary,
   },
   navItem: {
     flex: 1,

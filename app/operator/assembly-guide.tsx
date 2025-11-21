@@ -3,19 +3,20 @@
  * Guía paso a paso de ensamblaje para operarios
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/DesignSystem';
 import { Button } from '@/components/atoms/Button';
 import { mockWorkOrders, mockAssemblySteps, AssemblyStep } from '@/data/mockData';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AssemblyGuideScreen() {
   const router = useRouter();
@@ -35,7 +36,13 @@ export default function AssemblyGuideScreen() {
   }
 
   const currentStep = steps[currentStepIndex];
-  const progress = ((currentStepIndex + 1) / steps.length) * 100;
+  const completedCount = completedSteps.length;
+  const progress = (completedCount / steps.length) * 100;
+
+  // Actualizar el progreso cuando se completan pasos
+  useEffect(() => {
+    // Este efecto se ejecuta cada vez que cambia completedSteps
+  }, [completedSteps]);
 
   const handleCompleteStep = () => {
     if (currentStep && !completedSteps.includes(currentStep.id)) {
@@ -77,12 +84,21 @@ export default function AssemblyGuideScreen() {
 
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
+        <View style={styles.progressInfo}>
+          <Text style={styles.progressLabel}>Progreso General</Text>
+          <Text style={styles.progressPercentage}>{Math.round(progress)}%</Text>
+        </View>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
-        <Text style={styles.progressText}>
-          Paso {currentStepIndex + 1} de {steps.length}
-        </Text>
+        <View style={styles.progressStats}>
+          <Text style={styles.progressStatsText}>
+            {completedCount} de {steps.length} completados
+          </Text>
+          <Text style={styles.progressStatsText}>
+            Paso actual: {currentStepIndex + 1}/{steps.length}
+          </Text>
+        </View>
       </View>
 
       {/* Step Content */}
@@ -95,7 +111,15 @@ export default function AssemblyGuideScreen() {
               </View>
               <View style={styles.stepTitleContainer}>
                 <Text style={styles.stepTitle}>{currentStep.title}</Text>
-                <Text style={styles.estimatedTime}>⏱ {currentStep.estimatedTime} min</Text>
+                <View style={styles.stepMeta}>
+                  <Text style={styles.estimatedTime}>⏱ {currentStep.estimatedTime} min</Text>
+                  {completedSteps.includes(currentStep.id) && (
+                    <View style={styles.completedBadge}>
+                      <Ionicons name="checkmark-circle" size={16} color={Colors.success.main} />
+                      <Text style={styles.completedText}>Completado</Text>
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
 
@@ -225,28 +249,45 @@ const styles = StyleSheet.create({
   progressContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    backgroundColor: Colors.background.secondary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.background.border,
+  },
+  progressInfo: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  progressLabel: {
+    fontSize: Typography.sizes.bodySmall,
+    color: Colors.text.secondary,
+  },
+  progressPercentage: {
+    fontSize: Typography.sizes.h3,
+    fontWeight: Typography.weights.bold,
+    color: Colors.primary.main,
   },
   progressBar: {
-    flex: 1,
-    height: 8,
-    backgroundColor: Colors.background.secondary,
+    height: 12,
+    backgroundColor: Colors.background.primary,
     borderRadius: BorderRadius.sm,
-    marginRight: Spacing.sm,
     overflow: 'hidden',
+    marginBottom: Spacing.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: Colors.warning,
+    backgroundColor: Colors.primary.main,
     borderRadius: BorderRadius.sm,
   },
-  progressText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.text.primary,
-    minWidth: 80,
-    textAlign: 'right',
+  progressStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressStatsText: {
+    fontSize: Typography.sizes.caption,
+    color: Colors.text.secondary,
   },
   content: {
     flex: 1,
@@ -271,7 +312,7 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontSize: Typography.sizes.h2,
     fontWeight: Typography.weights.bold,
-    color: Colors.background.primaryer,
+    color: Colors.background.secondary,
   },
   stepTitleContainer: {
     flex: 1,
@@ -282,9 +323,28 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
+  stepMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   estimatedTime: {
     fontSize: Typography.sizes.bodySmall,
     color: Colors.text.secondary,
+  },
+  completedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.success.background,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs / 2,
+    borderRadius: BorderRadius.sm,
+    gap: Spacing.xs / 2,
+  },
+  completedText: {
+    fontSize: Typography.sizes.caption,
+    color: Colors.success.main,
+    fontWeight: Typography.weights.semibold,
   },
   descriptionCard: {
     backgroundColor: Colors.background.secondary,
@@ -325,7 +385,7 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   },
   warningsCard: {
-    backgroundColor: Colors.background.primaryer,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -367,7 +427,7 @@ const styles = StyleSheet.create({
   bottomActions: {
     backgroundColor: Colors.background.secondary,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.primaryer,
+    borderTopColor: Colors.background.secondary,
     padding: Spacing.md,
   },
   actionButtons: {

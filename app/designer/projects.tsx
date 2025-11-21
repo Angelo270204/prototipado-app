@@ -1,6 +1,6 @@
 /**
- * Designer Projects Screen
- * Lista de proyectos para diseñadores
+ * Designer Module - Main Screen
+ * Vista unificada con tabs locales (Proyectos, Importar, Visor AR)
  */
 
 import React, { useState } from 'react';
@@ -8,104 +8,595 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
-  SafeAreaView,
+  Alert,
+  Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Colors, Typography, Spacing } from '@/constants/DesignSystem';
-import { ProjectCard } from '@/components/molecules/ProjectCard';
-import { Button } from '@/components/atoms/Button';
-import { mockProjects } from '@/data/mockData';
+import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { useApp } from '@/contexts/AppContext';
+import { Ionicons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
+import ARViewer from '@/components/ar/ARViewer';
 
-export default function DesignerProjectsScreen() {
+type TabType = 'projects' | 'import' | 'ar';
+
+export default function DesignerMainScreen() {
   const router = useRouter();
-  const { currentUser } = useApp();
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'pending' | 'in_progress' | 'validation'>('all');
+  const { currentUser, projects } = useApp();
+  const [selectedTab, setSelectedTab] = useState<TabType>('projects');
 
-  const filters = [
-    { key: 'all', label: 'Todos' },
-    { key: 'pending', label: 'Pendientes' },
-    { key: 'in_progress', label: 'En Progreso' },
-    { key: 'validation', label: 'Validación' },
-  ];
+  // Estados para Importar
+  const [selectedFile, setSelectedFile] = useState<{
+    name: string;
+    size: number;
+    uri: string;
+  } | null>(null);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+  const [processingOptions, setProcessingOptions] = useState({
+    detectCollisions: false,
+    generateBOM: false,
+    createAssemblyGuides: false,
+  });
 
-  const filteredProjects = selectedFilter === 'all'
-    ? mockProjects
-    : mockProjects.filter(p => p.status === selectedFilter);
+  // Estados para Visor AR
+  const [selectedModel, setSelectedModel] = useState<string>('SLDPRT');
+  const [isARActive, setIsARActive] = useState(false);
+  const [captureCount, setCaptureCount] = useState(0);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Hola, {currentUser?.name?.split(' ')[0] || 'Diseñador'}</Text>
-          <Text style={styles.subtitle}>{filteredProjects.length} proyectos activos</Text>
-        </View>
-        <TouchableOpacity onPress={() => router.push('/designer/new-project')}>
-          <View style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Nuevo</Text>
-          </View>
+  const supportedFormats = ['SLDPRT', 'DWG', 'STEP', 'STL', 'IGES', 'OBJ'];
+  const modelTypes = ['SLDPRT', 'Escalar', 'Medir'];
+
+  const validations = {
+    scale: { valid: true, message: '1:1 - Dimensiones correctas' },
+    collisions: { valid: true, message: 'Todos los componentes alineados' },
+    space: { valid: false, message: 'Se requieren 5m² adicionales' },
+  };
+
+  // Funciones para Proyectos
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'approved':
+        return Colors.functional.success;
+      case 'in_progress':
+        return Colors.functional.info;
+      case 'validation':
+        return Colors.functional.warning;
+      case 'pending':
+        return Colors.functional.error;
+      default:
+        return Colors.grays.dark;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    const statusMap: Record<string, string> = {
+      pending: 'Pendiente Revisión',
+      in_progress: 'En Validación',
+      validation: 'Pendiente Revisión',
+      approved: 'Aprobado',
+      completed: 'Aprobado',
+    };
+    return statusMap[status] || status;
+  };
+
+  // Funciones para Importar
+  const handleSelectFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          'application/octet-stream',
+          'application/sla',
+          'model/stl',
+          'application/step',
+          'application/iges',
+          'model/obj',
+        ],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled === false && result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+        setSelectedFile({
+          name: file.name,
+          size: file.size || 0,
+          uri: file.uri,
+        });
+      }
+    } catch {
+      Alert.alert('Error', 'No se pudo seleccionar el archivo');
+    }
+  };
+
+  const toggleFormat = (format: string) => {
+    setSelectedFormats((prev) =>
+      prev.includes(format)
+        ? prev.filter((f) => f !== format)
+        : [...prev, format]
+    );
+  };
+
+  const toggleOption = (option: keyof typeof processingOptions) => {
+    setProcessingOptions((prev) => ({
+      ...prev,
+      [option]: !prev[option],
+    }));
+  };
+
+  const handleContinueImport = () => {
+    if (!selectedFile) {
+      Alert.alert('Atención', 'Por favor selecciona un archivo CAD');
+      return;
+    }
+
+    Alert.alert(
+      'Archivo importado',
+      `Archivo: ${selectedFile.name}\nFormatos seleccionados: ${selectedFormats.join(', ') || 'Ninguno'}`,
+      [
+        {
+          text: 'Continuar',
+          onPress: () => {
+            router.push('/designer/new-project');
+          },
+        },
+      ]
+    );
+  };
+
+  // Funciones para Visor AR
+  const handleScan = () => {
+    setIsARActive(true);
+  };
+
+  const handleCloseAR = () => {
+    setIsARActive(false);
+  };
+
+  const handleCapture = () => {
+    setCaptureCount(prev => prev + 1);
+    Alert.alert(
+      'Captura Realizada',
+      `Se ha guardado la captura #${captureCount + 1} en tu galería`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleMeasure = () => {
+    Alert.alert(
+      'Mediciones Activas',
+      'Ahora puedes ver las medidas del modelo en la vista AR',
+      [{ text: 'Entendido' }]
+    );
+  };
+
+  const handleShareAR = () => {
+    Alert.alert(
+      'Compartir',
+      '¿Deseas compartir este modelo AR con el equipo?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Compartir', onPress: () => {} },
+      ]
+    );
+  };
+
+  // Renderizado de contenido según tab seleccionado
+  const renderContent = () => {
+    switch (selectedTab) {
+      case 'projects':
+        return renderProjects();
+      case 'import':
+        return renderImport();
+      case 'ar':
+        return renderARViewer();
+      default:
+        return null;
+    }
+  };
+
+  const renderProjects = () => (
+    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      {/* Section Header */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>MIS PROYECTOS</Text>
+        <TouchableOpacity 
+          style={styles.newButton}
+          onPress={() => router.push('/designer/new-project')}
+        >
+          <Text style={styles.newButtonText}>+ Nuevo</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Filters */}
-      <View style={styles.filtersContainer}>
-        {filters.map((filter) => (
+      {/* Projects List */}
+      <View style={styles.projectsList}>
+        {projects.map((project) => (
           <TouchableOpacity
-            key={filter.key}
-            style={[
-              styles.filterChip,
-              selectedFilter === filter.key && styles.filterChipActive,
-            ]}
-            onPress={() => setSelectedFilter(filter.key as any)}
+            key={project.id}
+            style={styles.projectCard}
+            onPress={() => router.push(`/designer/project-detail?id=${project.id}`)}
+            activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.filterText,
-                selectedFilter === filter.key && styles.filterTextActive,
-              ]}
+            <View style={styles.projectCardContent}>
+              {/* Project Info */}
+              <View style={styles.projectInfo}>
+                <Text style={styles.projectName}>{project.name}</Text>
+                <Text style={styles.projectDetails}>
+                  v{project.id.slice(0, 3)} • {new Date(project.updatedAt).toLocaleDateString('es-ES', { 
+                    day: 'numeric',
+                    month: 'short'
+                  })}
+                </Text>
+              </View>
+
+              {/* Status Badge */}
+              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(project.status) }]}>
+                <Text style={styles.statusText}>{getStatusText(project.status)}</Text>
+              </View>
+            </View>
+
+            {/* Share Button */}
+            <TouchableOpacity 
+              style={styles.shareButton}
+              onPress={(e) => {
+                e.stopPropagation();
+              }}
             >
-              {filter.label}
-            </Text>
+              <Ionicons name="share-social" size={18} color={Colors.base.whitePrimary} />
+              <Text style={styles.shareButtonText}>Compartido</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Projects List */}
-      <FlatList
-        data={filteredProjects}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProjectCard
-            project={item}
-            onPress={() => router.push(`/designer/project-detail?id=${item.id}`)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No hay proyectos en esta categoría</Text>
-          </View>
-        }
-      />
+      {/* Empty State */}
+      {projects.length === 0 && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>No hay proyectos disponibles</Text>
+          <TouchableOpacity 
+            style={styles.emptyButton}
+            onPress={() => router.push('/designer/new-project')}
+          >
+            <Text style={styles.emptyButtonText}>Crear primer proyecto</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-      {/* Bottom Navigation Placeholder */}
+      <View style={{ height: 100 }} />
+    </ScrollView>
+  );
+
+  const renderImport = () => (
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.pageTitle}>Importar Archivo CAD</Text>
+
+      {/* Área de selección de archivo */}
+      <View style={styles.fileUploadArea}>
+        <Ionicons
+          name="document-text-outline"
+          size={48}
+          color={Colors.base.whitePrimary}
+          style={styles.fileIcon}
+        />
+        <Text style={styles.fileUploadTitle}>Arrastra tu archivo CAD</Text>
+        <Text style={styles.fileUploadSubtitle}>
+          Formatos: .dwg, .shl, .obj, .step
+        </Text>
+        <TouchableOpacity
+          style={styles.selectFileButton}
+          onPress={handleSelectFile}
+        >
+          <Text style={styles.selectFileButtonText}>SELECCIONAR ARCHIVO</Text>
+        </TouchableOpacity>
+        {selectedFile && (
+          <View style={styles.selectedFileInfo}>
+            <Ionicons name="checkmark-circle" size={20} color={Colors.functional.success} />
+            <Text style={styles.selectedFileName}>{selectedFile.name}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Formatos Soportados */}
+      <View style={styles.formatsSection}>
+        <Text style={styles.formatsSectionTitle}>Formatos Soportados</Text>
+        <View style={styles.formatsGrid}>
+          {supportedFormats.map((format) => (
+            <TouchableOpacity
+              key={format}
+              style={[
+                styles.formatButton,
+                selectedFormats.includes(format) && styles.formatButtonActive,
+              ]}
+              onPress={() => toggleFormat(format)}
+            >
+              <Text
+                style={[
+                  styles.formatButtonText,
+                  selectedFormats.includes(format) && styles.formatButtonTextActive,
+                ]}
+              >
+                {format}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Opciones de Procesamiento */}
+      <View style={styles.optionsSection}>
+        <Text style={styles.optionsSectionTitle}>Opciones de Procesamiento</Text>
+        
+        <TouchableOpacity
+          style={styles.checkboxRow}
+          onPress={() => toggleOption('detectCollisions')}
+        >
+          <View style={styles.checkbox}>
+            {processingOptions.detectCollisions && (
+              <Ionicons name="checkmark" size={16} color={Colors.base.blackPrimary} />
+            )}
+          </View>
+          <Text style={styles.checkboxLabel}>Detectar colisiones automáticamente</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.checkboxRow}
+          onPress={() => toggleOption('generateBOM')}
+        >
+          <View style={styles.checkbox}>
+            {processingOptions.generateBOM && (
+              <Ionicons name="checkmark" size={16} color={Colors.base.blackPrimary} />
+            )}
+          </View>
+          <Text style={styles.checkboxLabel}>Generar BOM (Bill of Materials)</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.checkboxRow}
+          onPress={() => toggleOption('createAssemblyGuides')}
+        >
+          <View style={styles.checkbox}>
+            {processingOptions.createAssemblyGuides && (
+              <Ionicons name="checkmark" size={16} color={Colors.base.blackPrimary} />
+            )}
+          </View>
+          <Text style={styles.checkboxLabel}>Crear guías de ensamblaje</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Botón Siguiente */}
+      <TouchableOpacity
+        style={styles.continueButton}
+        onPress={handleContinueImport}
+      >
+        <Text style={styles.continueButtonText}>Siguiente</Text>
+      </TouchableOpacity>
+
+      <View style={{ height: 100 }} />
+    </ScrollView>
+  );
+
+  const renderARViewer = () => (
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.pageTitle}>Visor AR - Motor Industrial V3</Text>
+
+      {/* Visor AR Principal */}
+      <View style={styles.arViewerContainer}>
+        <View style={styles.arView}>
+          <Ionicons
+            name="cube-outline"
+            size={80}
+            color={Colors.base.whitePrimary}
+          />
+        </View>
+
+        {/* Model Type Selector */}
+        <View style={styles.modelSelector}>
+          {modelTypes.map((type) => (
+            <TouchableOpacity
+              key={type}
+              style={[
+                styles.modelButton,
+                selectedModel === type && styles.modelButtonActive,
+              ]}
+              onPress={() => setSelectedModel(type)}
+            >
+              <Text
+                style={[
+                  styles.modelButtonText,
+                  selectedModel === type && styles.modelButtonTextActive,
+                ]}
+              >
+                {type}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Validación AR */}
+      <View style={styles.validationSection}>
+        <Text style={styles.validationTitle}>Validación AR</Text>
+
+        <View style={styles.validationCard}>
+          <View style={styles.validationHeader}>
+            <Text style={styles.validationLabel}>Escala validada</Text>
+            <View style={styles.validationBadge}>
+              <Text style={styles.validationBadgeText}>Aprobado</Text>
+            </View>
+          </View>
+          <Text style={styles.validationMessage}>
+            {validations.scale.message}
+          </Text>
+        </View>
+
+        <View style={styles.validationCard}>
+          <View style={styles.validationHeader}>
+            <Text style={styles.validationLabel}>Sin colisiones</Text>
+            <View style={styles.validationBadge}>
+              <Text style={styles.validationBadgeText}>Aprobado</Text>
+            </View>
+          </View>
+          <Text style={styles.validationMessage}>
+            {validations.collisions.message}
+          </Text>
+        </View>
+
+        <View style={styles.validationCard}>
+          <View style={styles.validationHeader}>
+            <Text style={styles.validationLabel}>Espacio insuficiente</Text>
+            <View style={[styles.validationBadge, styles.validationBadgeError]}>
+              <Text style={styles.validationBadgeText}>Error</Text>
+            </View>
+          </View>
+          <Text style={styles.validationMessage}>
+            {validations.space.message}
+          </Text>
+        </View>
+      </View>
+
+      {/* Botones de Acción */}
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleScan}
+        >
+          <Ionicons name="scan-outline" size={20} color={Colors.base.whitePrimary} />
+          <Text style={styles.actionButtonText}>Escanear</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleShareAR}
+        >
+          <Ionicons name="share-social-outline" size={20} color={Colors.base.whitePrimary} />
+          <Text style={styles.actionButtonText}>Compartir</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Información adicional */}
+      <View style={styles.infoSection}>
+        <View style={styles.infoRow}>
+          <Ionicons name="information-circle-outline" size={18} color={Colors.grays.dark} />
+          <Text style={styles.infoText}>
+            Mueve tu dispositivo para explorar el modelo en AR
+          </Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Ionicons name="hand-left-outline" size={18} color={Colors.grays.dark} />
+          <Text style={styles.infoText}>
+            Usa gestos para rotar, escalar y mover el modelo
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ height: 100 }} />
+    </ScrollView>
+  );
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color={Colors.base.blackPrimary} />
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>Módulo Diseñador</Text>
+          <Text style={styles.headerSubtitle}>Gestión de proyectos CAD y AR</Text>
+        </View>
+      </View>
+
+      {/* Tabs */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={[styles.tab, selectedTab === 'projects' && styles.tabActive]}
+          onPress={() => setSelectedTab('projects')}
+        >
+          <Text style={[styles.tabText, selectedTab === 'projects' && styles.tabTextActive]}>
+            Proyectos
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, selectedTab === 'import' && styles.tabActive]}
+          onPress={() => setSelectedTab('import')}
+        >
+          <Text style={[styles.tabText, selectedTab === 'import' && styles.tabTextActive]}>
+            Importar
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, selectedTab === 'ar' && styles.tabActive]}
+          onPress={() => setSelectedTab('ar')}
+        >
+          <Text style={[styles.tabText, selectedTab === 'ar' && styles.tabTextActive]}>
+            Visor AR
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Content Area */}
+      {renderContent()}
+
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/designer/projects')}>
-          <Text style={styles.navIcon}>📁</Text>
-          <Text style={[styles.navLabel, styles.navLabelActive]}>Proyectos</Text>
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => setSelectedTab('projects')}
+        >
+          <Ionicons 
+            name="folder" 
+            size={24} 
+            color={selectedTab === 'projects' ? Colors.base.blackPrimary : Colors.text.secondary} 
+          />
+          <Text style={[styles.navLabel, selectedTab === 'projects' && styles.navLabelActive]}>
+            Proyectos
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/designer/ar-viewer')}>
-          <Text style={styles.navIcon}>🥽</Text>
-          <Text style={styles.navLabel}>Vista RA</Text>
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => setSelectedTab('ar')}
+        >
+          <Ionicons 
+            name="scan" 
+            size={24} 
+            color={selectedTab === 'ar' ? Colors.base.blackPrimary : Colors.text.secondary} 
+          />
+          <Text style={[styles.navLabel, selectedTab === 'ar' && styles.navLabelActive]}>
+            Vista RA
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/designer/profile')}>
-          <Text style={styles.navIcon}>👤</Text>
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => router.push('/designer/profile')}
+        >
+          <Ionicons name="person" size={24} color={Colors.text.secondary} />
           <Text style={styles.navLabel}>Perfil</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal AR Viewer */}
+      <Modal
+        visible={isARActive}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <ARViewer
+          modelName="Motor Industrial V3"
+          onClose={handleCloseAR}
+          onCapture={handleCapture}
+          onMeasure={handleMeasure}
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -113,98 +604,438 @@ export default function DesignerProjectsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.base.whitePrimary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.base.whitePrimary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.medium,
+  },
+  backButton: {
+    marginRight: Spacing.md,
+    padding: Spacing.xs,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+    fontStyle: 'italic',
+  },
+  headerSubtitle: {
+    fontSize: 11,
+    color: Colors.grays.dark,
+    marginTop: 2,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    backgroundColor: Colors.base.whitePrimary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.medium,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: {
+    borderBottomColor: Colors.base.blackPrimary,
+  },
+  tabText: {
+    fontSize: 14,
+    color: Colors.grays.dark,
+    fontWeight: '500',
+  },
+  tabTextActive: {
+    color: Colors.base.blackPrimary,
+    fontWeight: '700',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  pageTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: Colors.base.blackPrimary,
+    marginBottom: 20,
+  },
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.lg,
     paddingBottom: Spacing.md,
   },
-  greeting: {
-    fontSize: Typography.sizes.h1,
+  sectionTitle: {
+    fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
+    color: Colors.base.blackPrimary,
+    fontStyle: 'italic',
   },
-  subtitle: {
-    fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
-    marginTop: Spacing.xs,
-  },
-  addButton: {
-    backgroundColor: Colors.success,
-    paddingHorizontal: Spacing.md,
+  newButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
-    borderRadius: 8,
+    borderRadius: BorderRadius.round,
   },
-  addButtonText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.background.primaryer,
+  newButtonText: {
+    color: Colors.base.whitePrimary,
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.bold,
   },
-  filtersContainer: {
+  projectsList: {
+    paddingHorizontal: Spacing.lg,
+  },
+  projectCard: {
+    backgroundColor: Colors.base.blackPrimary,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    ...Shadows.small,
+  },
+  projectCardContent: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    gap: Spacing.sm,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.sm,
   },
-  filterChip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: 20,
-    backgroundColor: Colors.background.secondary,
+  projectInfo: {
+    flex: 1,
   },
-  filterChipActive: {
-    backgroundColor: Colors.success,
+  projectName: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.whitePrimary,
+    marginBottom: Spacing.xs,
   },
-  filterText: {
+  projectDetails: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
+    color: Colors.text.label,
   },
-  filterTextActive: {
-    color: Colors.background.primaryer,
-    fontWeight: Typography.weights.semibold,
+  statusBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
   },
-  listContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: 100,
+  statusText: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.blackPrimary,
   },
-  emptyContainer: {
-    padding: Spacing.xl,
+  shareButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.xs,
+  },
+  shareButtonText: {
+    fontSize: Typography.sizes.caption,
+    color: Colors.base.whitePrimary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xxl * 2,
   },
   emptyText: {
     fontSize: Typography.sizes.body,
     color: Colors.text.secondary,
+    marginBottom: Spacing.lg,
+  },
+  emptyButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.round,
+  },
+  emptyButtonText: {
+    color: Colors.base.whitePrimary,
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.semibold,
   },
   bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     flexDirection: 'row',
-    backgroundColor: Colors.background.secondary,
-    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.base.whitePrimary,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.primaryer,
+    borderTopColor: Colors.grays.medium,
+    paddingVertical: Spacing.sm,
+    paddingBottom: Spacing.md,
   },
   navItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-  },
-  navIcon: {
-    fontSize: 24,
-    marginBottom: Spacing.xs,
+    gap: Spacing.xs,
   },
   navLabel: {
     fontSize: Typography.sizes.caption,
     color: Colors.text.secondary,
   },
   navLabelActive: {
-    color: Colors.success,
+    color: Colors.base.blackPrimary,
     fontWeight: Typography.weights.semibold,
+  },
+
+  // Import Styles
+  fileUploadArea: {
+    backgroundColor: Colors.grays.dark,
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  fileIcon: {
+    marginBottom: 16,
+  },
+  fileUploadTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+    marginBottom: 8,
+  },
+  fileUploadSubtitle: {
+    fontSize: 12,
+    color: Colors.grays.light,
+    marginBottom: 20,
+  },
+  selectFileButton: {
+    backgroundColor: Colors.base.whitePrimary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  selectFileButtonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+    letterSpacing: 0.5,
+  },
+  selectedFileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    gap: 8,
+  },
+  selectedFileName: {
+    fontSize: 13,
+    color: Colors.functional.success,
+    fontWeight: '600',
+  },
+  formatsSection: {
+    backgroundColor: Colors.grays.dark,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+  },
+  formatsSectionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+    fontStyle: 'italic',
+    marginBottom: 16,
+  },
+  formatsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  formatButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  formatButtonActive: {
+    backgroundColor: Colors.base.whitePrimary,
+  },
+  formatButtonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+  formatButtonTextActive: {
+    color: Colors.base.blackPrimary,
+  },
+  optionsSection: {
+    marginBottom: 32,
+  },
+  optionsSectionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: Colors.base.blackPrimary,
+    marginBottom: 16,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: Colors.grays.medium,
+    borderRadius: 4,
+    marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.base.whitePrimary,
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    color: Colors.base.blackPrimary,
+    flex: 1,
+  },
+  continueButton: {
+    backgroundColor: Colors.base.blackPrimary,
+    paddingVertical: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  continueButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+
+  // AR Viewer Styles
+  arViewerContainer: {
+    backgroundColor: Colors.grays.dark,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 24,
+  },
+  arView: {
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.grays.dark,
+  },
+  modelSelector: {
+    flexDirection: 'row',
+    padding: 16,
+    gap: 12,
+    justifyContent: 'center',
+  },
+  modelButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: Colors.base.whitePrimary,
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  modelButtonActive: {
+    backgroundColor: Colors.grays.light,
+  },
+  modelButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.base.blackPrimary,
+    fontStyle: 'italic',
+  },
+  modelButtonTextActive: {
+    color: Colors.base.blackPrimary,
+    fontWeight: 'bold',
+  },
+  validationSection: {
+    marginBottom: 24,
+  },
+  validationTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: Colors.base.blackPrimary,
+    marginBottom: 16,
+  },
+  validationCard: {
+    backgroundColor: Colors.grays.dark,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  validationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  validationLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+    fontStyle: 'italic',
+  },
+  validationBadge: {
+    backgroundColor: Colors.functional.success,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  validationBadgeError: {
+    backgroundColor: Colors.functional.error,
+  },
+  validationBadgeText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+  },
+  validationMessage: {
+    fontSize: 12,
+    color: Colors.grays.light,
+    fontStyle: 'italic',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.base.blackPrimary,
+    paddingVertical: 14,
+    borderRadius: 25,
+    gap: 8,
+  },
+  actionButtonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+  infoSection: {
+    backgroundColor: Colors.grays.light,
+    borderRadius: 12,
+    padding: 16,
+    gap: 12,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.grays.dark,
+    lineHeight: 18,
   },
 });

@@ -52,7 +52,7 @@ export default function LoginScreen() {
         {/* Header con Logo */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Ionicons name="cube-outline" size={64} color={Colors.primary.main} />
+            <Ionicons name="cube-outline" size={64} color={Colors.base.blackPrimary} />
           </View>
           <Text style={styles.title}>DTP-AR</Text>
           <Text style={styles.subtitle}>Validación CAD en Realidad Aumentada</Text>
@@ -69,13 +69,13 @@ export default function LoginScreen() {
               <Ionicons
                 name="mail-outline"
                 size={20}
-                color={Colors.text.secondary}
+                color={Colors.auth.inputText}
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="ejemplo@empresa.com"
-                placeholderTextColor={Colors.text.tertiary}
+                placeholderTextColor={Colors.auth.inputPlaceholder}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -92,13 +92,13 @@ export default function LoginScreen() {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color={Colors.text.secondary}
+                color={Colors.auth.inputText}
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor={Colors.text.tertiary}
+                placeholderTextColor={Colors.auth.inputPlaceholder}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -111,7 +111,7 @@ export default function LoginScreen() {
                 <Ionicons
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={20}
-                  color={Colors.text.secondary}
+                  color={Colors.auth.inputText}
                 />
               </TouchableOpacity>
             </View>
@@ -186,7 +186,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.auth.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: BorderRadius.xxl,
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.auth.cardBackground,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
@@ -211,17 +211,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.sizes.h1,
     fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
+    color: Colors.auth.title,
     marginBottom: Spacing.xs,
   },
   subtitle: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
+    color: Colors.auth.subtitle,
     textAlign: 'center',
     maxWidth: 280,
   },
   formContainer: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.auth.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     ...Shadows.medium,
@@ -239,16 +239,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.medium,
-    color: Colors.text.primary,
+    color: Colors.auth.inputLabel,
     marginBottom: Spacing.xs,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.auth.inputBackground,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.background.border,
+    borderColor: Colors.auth.inputBorder,
     height: 44,
     paddingHorizontal: Spacing.md,
   },
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
+    color: Colors.auth.inputText,
     height: '100%',
   },
   eyeIcon: {
@@ -279,14 +279,14 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: BorderRadius.sm,
     borderWidth: 2,
-    borderColor: Colors.background.border,
+    borderColor: Colors.grays.medium,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.xs,
   },
   checkboxChecked: {
-    backgroundColor: Colors.primary.main,
-    borderColor: Colors.primary.main,
+    backgroundColor: Colors.base.blackPrimary,
+    borderColor: Colors.base.blackPrimary,
   },
   rememberMeText: {
     fontSize: Typography.sizes.bodySmall,
@@ -294,11 +294,11 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.primary.main,
+    color: Colors.text.secondary,
     fontWeight: Typography.weights.medium,
   },
   loginButton: {
-    backgroundColor: Colors.primary.main,
+    backgroundColor: Colors.auth.buttonBackground,
     borderRadius: BorderRadius.md,
     height: 44,
     alignItems: 'center',
@@ -307,12 +307,13 @@ const styles = StyleSheet.create({
     ...Shadows.small,
   },
   loginButtonDisabled: {
-    backgroundColor: Colors.text.disabled,
+    backgroundColor: Colors.grays.dark,
+    opacity: 0.5,
   },
   loginButtonText: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
-    color: Colors.primary.contrast,
+    color: Colors.auth.buttonText,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.background.border,
+    backgroundColor: Colors.grays.medium,
   },
   dividerText: {
     marginHorizontal: Spacing.md,
@@ -339,10 +340,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.background.border,
+    borderColor: Colors.grays.medium,
     height: 44,
     gap: Spacing.xs,
   },
@@ -362,8 +363,9 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.primary.main,
+    color: Colors.text.primary,
     fontWeight: Typography.weights.semibold,
+    textDecorationLine: 'underline',
   },
   footer: {
     marginTop: Spacing.xl,
@@ -371,6 +373,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: Typography.sizes.caption,
-    color: Colors.text.tertiary,
+    color: Colors.grays.medium,
   },
 });

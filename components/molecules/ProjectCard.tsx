@@ -18,15 +18,15 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onPress }) =>
     switch (status) {
       case 'completed':
       case 'approved':
-        return Colors.success;
+        return Colors.functional.success; // Verde industrial
       case 'in_progress':
-        return Colors.focus;
+        return Colors.functional.info; // Azul funcional
       case 'validation':
-        return Colors.warning;
+        return Colors.functional.warning; // Amarillo
       case 'pending':
-        return Colors.text.secondary;
+        return Colors.grays.dark; // Gris oscuro
       default:
-        return Colors.text.secondary;
+        return Colors.grays.dark;
     }
   };
 
@@ -86,9 +86,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onPress }) =>
         </View>
       </View>
 
-      {project.validationRequired && (
+      {project.validationRequired && (project.status === 'pending' || project.status === 'in_progress' || project.status === 'validation') && (
         <View style={styles.validationBadge}>
-          <Text style={styles.validationText}>⚠ Requiere Validación RA</Text>
+          <Text style={styles.validationText}>⚠️ Requiere Validación AR</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -97,7 +97,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onPress }) =>
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.blackPrimary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -116,22 +116,25 @@ const styles = StyleSheet.create({
   projectName: {
     fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.bold,
-    color: Colors.text.primary,
+    color: Colors.base.whitePrimary,
     marginBottom: Spacing.xs,
   },
   client: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
+    color: Colors.grays.light,
   },
   statusBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: BorderRadius.sm,
+    minWidth: 100,
+    alignItems: 'center',
   },
   statusText: {
     fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.background.primaryer,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.blackPrimary,
+    textAlign: 'center',
   },
   progressSection: {
     flexDirection: 'row',
@@ -141,7 +144,7 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: Colors.background.primaryer,
+    backgroundColor: Colors.grays.medium,
     borderRadius: BorderRadius.sm,
     marginRight: Spacing.sm,
     overflow: 'hidden',
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.semibold,
-    color: Colors.text.primary,
+    color: Colors.base.whitePrimary,
     minWidth: 40,
     textAlign: 'right',
   },
@@ -167,25 +170,25 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: Typography.sizes.caption,
-    color: Colors.text.secondary,
+    color: Colors.grays.medium,
     marginRight: Spacing.xs,
   },
   infoValue: {
     fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.medium,
-    color: Colors.text.primary,
+    color: Colors.base.whitePrimary,
   },
   validationBadge: {
     marginTop: Spacing.sm,
     padding: Spacing.sm,
-    backgroundColor: Colors.background.primaryer,
+    backgroundColor: Colors.warning.background,
     borderRadius: BorderRadius.sm,
     borderLeftWidth: 3,
-    borderLeftColor: Colors.warning,
+    borderLeftColor: Colors.functional.warning,
   },
   validationText: {
     fontSize: Typography.sizes.caption,
-    color: Colors.warning,
-    fontWeight: Typography.weights.medium,
+    color: Colors.base.blackPrimary,
+    fontWeight: Typography.weights.semibold,
   },
 });

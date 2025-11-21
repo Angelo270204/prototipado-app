@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.semibold,
-    color: Colors.background.primaryer,
+    color: Colors.background.secondary,
   },
   operatorSection: {
     flexDirection: 'row',
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: Colors.background.primaryer,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.sm,
     marginRight: Spacing.sm,
     overflow: 'hidden',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.primaryer,
+    borderTopColor: Colors.background.secondary,
   },
   qrLabel: {
     fontSize: Typography.sizes.caption,
