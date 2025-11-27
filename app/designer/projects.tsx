@@ -1,6 +1,6 @@
 /**
  * Designer Module - Main Screen
- * Vista unificada con tabs locales (Proyectos, Importar, Visor AR)
+ * Vista unificada con tabs locales (Proyectos, Importar, Visor AR) - Yardy Diseñador
  */
 
 import React, { useState } from 'react';
@@ -17,16 +17,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { useApp } from '@/contexts/AppContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import ARViewer from '@/components/ar/ARViewer';
+import NotificationBadge from '@/components/molecules/NotificationBadge';
 
 type TabType = 'projects' | 'import' | 'ar';
 
 export default function DesignerMainScreen() {
   const router = useRouter();
-  const { currentUser, projects } = useApp();
+  const { projects } = useApp();
+  const { notifications, markNotificationAsRead, unreadCount } = useAuth();
+
+  // Debug logs
+  console.log('🎨 [Diseñador] Notifications:', notifications.length, 'Unread:', unreadCount);
+
   const [selectedTab, setSelectedTab] = useState<TabType>('projects');
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Estados para Importar
   const [selectedFile, setSelectedFile] = useState<{
@@ -507,14 +515,85 @@ export default function DesignerMainScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.base.blackPrimary} />
-        </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Módulo Diseñador</Text>
           <Text style={styles.headerSubtitle}>Gestión de proyectos CAD y AR</Text>
         </View>
+        <NotificationBadge
+          count={unreadCount}
+          onPress={() => {
+            console.log('🎨 [Diseñador] Abriendo modal de notificaciones');
+            setShowNotifications(true);
+          }}
+        />
       </View>
+
+      {/* Modal de Notificaciones */}
+      <Modal
+        visible={showNotifications}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowNotifications(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.notificationModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Notificaciones ({unreadCount})</Text>
+              <TouchableOpacity onPress={() => setShowNotifications(false)}>
+                <Ionicons name="close" size={24} color={Colors.base.blackPrimary} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalContent}>
+              {notifications.length === 0 ? (
+                <View style={styles.emptyNotifications}>
+                  <Ionicons name="notifications-outline" size={64} color={Colors.grays.medium} />
+                  <Text style={styles.emptyNotificationsText}>
+                    No tienes notificaciones
+                  </Text>
+                  <Text style={styles.emptyNotificationsSubtext}>
+                    Te notificaremos sobre actualizaciones de proyectos, aprobaciones y comentarios
+                  </Text>
+                </View>
+              ) : (
+                notifications.map((notification) => (
+                  <TouchableOpacity
+                    key={notification.id}
+                    style={[
+                      styles.notificationItem,
+                      !notification.read && styles.notificationItemUnread,
+                    ]}
+                    onPress={() => markNotificationAsRead(notification.id)}
+                  >
+                    <View style={styles.notificationIcon}>
+                      <Ionicons
+                        name={
+                          notification.type === 'project_approved'
+                            ? 'checkmark-circle-outline'
+                            : notification.type === 'project_rejected'
+                            ? 'close-circle-outline'
+                            : notification.type === 'comment_added'
+                            ? 'chatbubble-outline'
+                            : 'notifications-outline'
+                        }
+                        size={24}
+                        color={Colors.functional.info}
+                      />
+                    </View>
+                    <View style={styles.notificationContent}>
+                      <Text style={styles.notificationTitle}>{notification.title}</Text>
+                      <Text style={styles.notificationMessage}>{notification.message}</Text>
+                      <Text style={styles.notificationTime}>
+                        {new Date(notification.timestamp).toLocaleString('es-ES')}
+                      </Text>
+                    </View>
+                    {!notification.read && <View style={styles.unreadDot} />}
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>
@@ -609,6 +688,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     backgroundColor: Colors.base.whitePrimary,
@@ -621,6 +701,11 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
+  },
+  notificationButton: {
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.background.secondary,
   },
   headerTitle: {
     fontSize: 18,
@@ -1037,5 +1122,98 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.grays.dark,
     lineHeight: 18,
+  },
+  // Estilos del Modal de Notificaciones
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  notificationModal: {
+    backgroundColor: Colors.base.whitePrimary,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    paddingBottom: Spacing.xl,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.light,
+  },
+  modalTitle: {
+    fontSize: Typography.sizes.h2,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.blackPrimary,
+  },
+  modalContent: {
+    maxHeight: 500,
+  },
+  emptyNotifications: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xxl,
+    minHeight: 300,
+  },
+  emptyNotificationsText: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.medium,
+    color: Colors.text.primary,
+    marginTop: Spacing.lg,
+    textAlign: 'center',
+  },
+  emptyNotificationsSubtext: {
+    fontSize: Typography.sizes.bodySmall,
+    color: Colors.text.secondary,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    padding: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.light,
+  },
+  notificationItemUnread: {
+    backgroundColor: Colors.background.secondary,
+  },
+  notificationIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.grays.light,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  notificationContent: {
+    flex: 1,
+  },
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.base.blackPrimary,
+    marginBottom: 4,
+  },
+  notificationMessage: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+    lineHeight: 18,
+    marginBottom: 4,
+  },
+  notificationTime: {
+    fontSize: 11,
+    color: Colors.grays.dark,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.functional.info,
+    marginTop: 6,
   },
 });

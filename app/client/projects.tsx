@@ -12,46 +12,54 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/DesignSystem';
-import { useApp } from '@/contexts/AppContext';
 import { Ionicons } from '@expo/vector-icons';
 import ARViewer from '@/components/ar/ARViewer';
+import NotificationBadge from '@/components/molecules/NotificationBadge';
+import { useAuth } from '@/contexts/AuthContext';
+import { useApp } from '@/contexts/AppContext';
+import { mockUsers } from '@/data/mockData';
 
 type TabType = 'projects' | 'ar' | 'comments';
 
 export default function ClientMainScreen() {
   const router = useRouter();
-  const { projects } = useApp();
+  const { notifications, markNotificationAsRead, unreadCount } = useAuth();
+  const { approveProject, rejectProject, projects } = useApp();
+
+  // Debug logs
+  console.log('📱 [Cliente] Notifications:', notifications.length, 'Unread:', unreadCount);
+
   const [selectedTab, setSelectedTab] = useState<TabType>('projects');
+  const [showNotifications, setShowNotifications] = useState(false);
   const [isARActive, setIsARActive] = useState(false);
   const [captureCount, setCaptureCount] = useState(0);
-  const [commentText, setCommentText] = useState('');
 
-  // Proyectos compartidos con el cliente
-  const sharedProjects = [
-    {
-      id: '1',
-      name: 'Motor Industrial V3',
-      designer: 'Ing. Carlos Méndez',
-      sharedDate: '18 Nov 2025',
-      status: 'pending',
+  // Proyectos compartidos con el cliente (filtrados desde AppContext)
+  const sharedProjects = projects
+    .filter(p => (p.sharedRoles ? p.sharedRoles.includes('client') : true))
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      designer: mockDesignerNamePlaceholder(),
+      sharedDate: p.createdAt,
+      status: (p.status === 'validation' || p.status === 'pending') ? 'pending' : p.status,
       hasComments: true,
-      commentCount: 3,
-    },
-    {
-      id: '2',
-      name: 'Sistema Hidráulico B',
-      designer: 'Ing. Ana Torres',
-      sharedDate: '18 Nov 2025',
-      status: 'approved',
-      hasComments: false,
       commentCount: 0,
-    },
-  ];
+    }));
+
+  console.log('🔍 [Cliente] Total proyectos en contexto:', projects.length);
+  console.log('🔍 [Cliente] IDs proyectos en contexto:', projects.map(p => p.id));
+  console.log('🔍 [Cliente] Proyectos filtrados para cliente:', sharedProjects.length);
+
+  function mockDesignerNamePlaceholder() {
+    // Intento simple de obtener nombre de diseñador desde mockUsers
+    const d = mockUsers.find(u => u.role === 'designer');
+    return d ? d.name : 'Diseñador';
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -112,13 +120,57 @@ export default function ClientMainScreen() {
     );
   };
 
-  const handleSendComment = () => {
-    if (!commentText.trim()) {
-      Alert.alert('Atención', 'Por favor escribe un comentario');
-      return;
-    }
-    Alert.alert('Comentario enviado', 'Tu comentario ha sido enviado al diseñador');
-    setCommentText('');
+
+  const handleApproveProject = (projectId: string, projectName: string) => {
+    Alert.alert(
+      'Aprobar Proyecto',
+      `¿Estás seguro de aprobar "${projectName}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Aprobar',
+          style: 'default',
+          onPress: () => {
+            approveProject(projectId);
+            Alert.alert(
+              'Proyecto Aprobado',
+              `El proyecto "${projectName}" ha sido aprobado y notificado al equipo de producción.`
+            );
+          },
+        },
+      ]
+    );
+  };
+
+  const handleRejectProject = (projectId: string, projectName: string) => {
+    Alert.prompt(
+      'Rechazar Proyecto',
+      'Por favor indica el motivo del rechazo:',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Rechazar',
+          style: 'destructive',
+          onPress: (reason?: string) => {
+            if (reason && reason.trim()) {
+              rejectProject(projectId, reason);
+              Alert.alert(
+                'Proyecto Rechazado',
+                `El diseñador ha sido notificado del rechazo de "${projectName}" y tus comentarios.`
+              );
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '',
+      'default'
+    );
+  };
+
+  const handleOpenChat = (projectId: string) => {
+    // Navegar a la pantalla compartida de comentarios
+    router.push(`/shared/project-comments?projectId=${projectId}`);
   };
 
   // Renderizado de contenido según tab
@@ -128,8 +180,6 @@ export default function ClientMainScreen() {
         return renderProjects();
       case 'ar':
         return renderARViewer();
-      case 'comments':
-        return renderComments();
       default:
         return null;
     }
@@ -142,6 +192,42 @@ export default function ClientMainScreen() {
       showsVerticalScrollIndicator={false}
     >
       <Text style={styles.pageTitle}>Proyectos Compartidos</Text>
+
+      {/* Acciones Rápidas */}
+      <View style={styles.quickActionsContainer}>
+        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <View style={styles.quickActionsGrid}>
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => handleOpenChat('p1')}
+          >
+            <View style={styles.quickActionIcon}>
+              <Text style={styles.quickActionIconText}>💬</Text>
+            </View>
+            <Text style={styles.quickActionLabel}>Chat Equipo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => setSelectedTab('ar')}
+          >
+            <View style={styles.quickActionIcon}>
+              <Text style={styles.quickActionIconText}>📱</Text>
+            </View>
+            <Text style={styles.quickActionLabel}>Visor AR</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => router.push('/client/profile')}
+          >
+            <View style={styles.quickActionIcon}>
+              <Text style={styles.quickActionIconText}>👤</Text>
+            </View>
+            <Text style={styles.quickActionLabel}>Mi Perfil</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Proyectos */}
       <View style={styles.projectsList}>
@@ -170,16 +256,39 @@ export default function ClientMainScreen() {
                 style={styles.actionButtonSmall}
                 onPress={() => setSelectedTab('ar')}
               >
-                <Text style={styles.actionButtonSmallText}>Ver en AR</Text>
+                <Ionicons name="scan" size={16} color={Colors.base.whitePrimary} />
+                <Text style={styles.actionButtonSmallText}>Ver AR</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.actionButtonSmall}
-                onPress={() => setSelectedTab('comments')}
+                onPress={() => handleOpenChat(project.id)}
               >
-                <Text style={styles.actionButtonSmallText}>Comentarios</Text>
+                <Ionicons name="chatbubbles" size={16} color={Colors.base.whitePrimary} />
+                <Text style={styles.actionButtonSmallText}>Chat</Text>
               </TouchableOpacity>
             </View>
+
+            {/* Botones de Aprobación/Rechazo */}
+            {project.status === 'pending' && (
+              <View style={styles.approvalButtons}>
+                <TouchableOpacity
+                  style={styles.approveButton}
+                  onPress={() => handleApproveProject(project.id, project.name)}
+                >
+                  <Ionicons name="checkmark-circle" size={20} color={Colors.base.whitePrimary} />
+                  <Text style={styles.approveButtonText}>Aprobar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.rejectButton}
+                  onPress={() => handleRejectProject(project.id, project.name)}
+                >
+                  <Ionicons name="close-circle" size={20} color={Colors.base.whitePrimary} />
+                  <Text style={styles.rejectButtonText}>Rechazar</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ))}
       </View>
@@ -283,103 +392,91 @@ export default function ClientMainScreen() {
     </ScrollView>
   );
 
-  const renderComments = () => (
-    <ScrollView
-      style={styles.scrollView}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
-      <Text style={styles.pageTitle}>Comentarios - Motor Industrial V3</Text>
-
-      {/* Lista de comentarios */}
-      <View style={styles.commentsList}>
-        <View style={styles.commentCard}>
-          <View style={styles.commentHeader}>
-            <View style={styles.commentAvatar}>
-              <Ionicons name="person" size={20} color={Colors.base.whitePrimary} />
-            </View>
-            <View style={styles.commentHeaderInfo}>
-              <Text style={styles.commentAuthor}>Ing. Carlos Méndez</Text>
-              <Text style={styles.commentDate}>18 Nov 2025, 10:30 AM</Text>
-            </View>
-          </View>
-          <Text style={styles.commentText}>
-            He actualizado el diseño según tus comentarios. Por favor revisa la nueva versión.
-          </Text>
-        </View>
-
-        <View style={styles.commentCard}>
-          <View style={styles.commentHeader}>
-            <View style={styles.commentAvatar}>
-              <Ionicons name="person" size={20} color={Colors.base.whitePrimary} />
-            </View>
-            <View style={styles.commentHeaderInfo}>
-              <Text style={styles.commentAuthor}>Tú</Text>
-              <Text style={styles.commentDate}>17 Nov 2025, 3:45 PM</Text>
-            </View>
-          </View>
-          <Text style={styles.commentText}>
-            Me gustaría revisar las dimensiones del eje principal. ¿Podemos agendar una reunión?
-          </Text>
-        </View>
-
-        <View style={styles.commentCard}>
-          <View style={styles.commentHeader}>
-            <View style={styles.commentAvatar}>
-              <Ionicons name="person" size={20} color={Colors.base.whitePrimary} />
-            </View>
-            <View style={styles.commentHeaderInfo}>
-              <Text style={styles.commentAuthor}>Ing. Carlos Méndez</Text>
-              <Text style={styles.commentDate}>17 Nov 2025, 9:00 AM</Text>
-            </View>
-          </View>
-          <Text style={styles.commentText}>
-            Proyecto compartido. Puedes revisarlo en el visor AR y dejar tus comentarios.
-          </Text>
-        </View>
-      </View>
-
-      {/* Input de comentario */}
-      <View style={styles.commentInputSection}>
-        <Text style={styles.commentInputTitle}>Agregar comentario</Text>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="Escribe tu comentario aquí..."
-          placeholderTextColor={Colors.grays.dark}
-          multiline
-          numberOfLines={4}
-          value={commentText}
-          onChangeText={setCommentText}
-          textAlignVertical="top"
-        />
-        <TouchableOpacity
-          style={styles.sendCommentButton}
-          onPress={handleSendComment}
-        >
-          <Ionicons name="send" size={18} color={Colors.base.whitePrimary} />
-          <Text style={styles.sendCommentButtonText}>Enviar comentario</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={{ height: 100 }} />
-    </ScrollView>
-  );
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.base.blackPrimary} />
-        </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Módulo Cliente</Text>
           <Text style={styles.headerSubtitle}>Validación de diseños en AR</Text>
         </View>
+        <NotificationBadge
+          count={unreadCount}
+          onPress={() => {
+            console.log('📱 [Cliente] Abriendo modal de notificaciones');
+            setShowNotifications(true);
+          }}
+        />
       </View>
+
+      {/* Modal de Notificaciones */}
+      <Modal
+        visible={showNotifications}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowNotifications(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.notificationModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Notificaciones ({unreadCount})</Text>
+              <TouchableOpacity onPress={() => setShowNotifications(false)}>
+                <Ionicons name="close" size={24} color={Colors.base.blackPrimary} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalContent}>
+              {notifications.length === 0 ? (
+                <View style={styles.emptyNotifications}>
+                  <Ionicons name="notifications-outline" size={64} color={Colors.grays.medium} />
+                  <Text style={styles.emptyNotificationsText}>
+                    No tienes notificaciones
+                  </Text>
+                  <Text style={styles.emptyNotificationsSubtext}>
+                    Te notificaremos sobre nuevos proyectos y actualizaciones
+                  </Text>
+                </View>
+              ) : (
+                notifications.map((notification) => (
+                  <TouchableOpacity
+                    key={notification.id}
+                    style={[
+                      styles.notificationItem,
+                      !notification.read && styles.notificationItemUnread,
+                    ]}
+                    onPress={() => markNotificationAsRead(notification.id)}
+                  >
+                    <View style={styles.notificationIcon}>
+                      <Ionicons
+                        name={
+                          notification.type === 'project_shared'
+                            ? 'share-outline'
+                            : notification.type === 'project_approved'
+                            ? 'checkmark-circle-outline'
+                            : notification.type === 'comment_added'
+                            ? 'chatbubble-outline'
+                            : 'notifications-outline'
+                        }
+                        size={24}
+                        color={Colors.functional.info}
+                      />
+                    </View>
+                    <View style={styles.notificationContent}>
+                      <Text style={styles.notificationTitle}>{notification.title}</Text>
+                      <Text style={styles.notificationMessage}>{notification.message}</Text>
+                      <Text style={styles.notificationTime}>
+                        {new Date(notification.timestamp).toLocaleString('es-ES')}
+                      </Text>
+                    </View>
+                    {!notification.read && <View style={styles.unreadDot} />}
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
 
       {/* Tabs */}
       <View style={styles.tabs}>
@@ -397,14 +494,6 @@ export default function ClientMainScreen() {
         >
           <Text style={[styles.tabText, selectedTab === 'ar' && styles.tabTextActive]}>
             Visor AR
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, selectedTab === 'comments' && styles.tabActive]}
-          onPress={() => setSelectedTab('comments')}
-        >
-          <Text style={[styles.tabText, selectedTab === 'comments' && styles.tabTextActive]}>
-            Comentarios
           </Text>
         </TouchableOpacity>
       </View>
@@ -474,6 +563,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 16,
     backgroundColor: Colors.base.whitePrimary,
@@ -486,6 +576,11 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
+  },
+  notificationButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: Colors.background.secondary,
   },
   headerTitle: {
     fontSize: 18,
@@ -536,20 +631,69 @@ const styles = StyleSheet.create({
     color: Colors.base.blackPrimary,
     marginBottom: 20,
   },
+  quickActionsContainer: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: Colors.base.blackPrimary,
+    marginBottom: 12,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  quickActionCard: {
+    flex: 1,
+    backgroundColor: Colors.grays.dark,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
+  },
+  quickActionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.base.whitePrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  quickActionIconText: {
+    fontSize: 24,
+  },
+  quickActionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.base.whitePrimary,
+    textAlign: 'center',
+  },
   projectsList: {
     gap: 16,
     marginBottom: 24,
   },
   projectCard: {
-    backgroundColor: Colors.grays.dark,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: 16,
     padding: 20,
+    marginBottom: 16,
+    shadowColor: Colors.base.blackPrimary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: Colors.grays.light,
   },
   projectIconContainer: {
     width: 60,
     height: 60,
     borderRadius: 12,
-    backgroundColor: Colors.base.whitePrimary,
+    backgroundColor: Colors.base.blackPrimary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -558,20 +702,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   projectName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.base.whitePrimary,
+    color: Colors.base.blackPrimary,
     marginBottom: 4,
-    fontStyle: 'italic',
   },
   projectDesigner: {
     fontSize: 13,
-    color: Colors.grays.light,
+    color: Colors.text.secondary,
     marginBottom: 2,
   },
   projectDate: {
     fontSize: 12,
-    color: Colors.grays.light,
+    color: Colors.text.secondary,
   },
   statusBadge: {
     alignSelf: 'flex-start',
@@ -583,7 +726,7 @@ const styles = StyleSheet.create({
   statusBadgeText: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: Colors.base.blackPrimary,
+    color: Colors.base.whitePrimary,
   },
   projectActions: {
     flexDirection: 'row',
@@ -591,13 +734,51 @@ const styles = StyleSheet.create({
   },
   actionButtonSmall: {
     flex: 1,
+    flexDirection: 'row',
     backgroundColor: Colors.base.blackPrimary,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   actionButtonSmallText: {
     fontSize: 13,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+  approvalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  approveButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: Colors.functional.success,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  approveButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+  },
+  rejectButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: Colors.functional.error,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  rejectButtonText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: Colors.base.whitePrimary,
   },
@@ -815,5 +996,98 @@ const styles = StyleSheet.create({
   navLabelActive: {
     color: Colors.base.blackPrimary,
     fontWeight: '600',
+  },
+  // Estilos del Modal de Notificaciones
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  notificationModal: {
+    backgroundColor: Colors.base.whitePrimary,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 24,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.light,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.base.blackPrimary,
+  },
+  modalContent: {
+    maxHeight: 500,
+  },
+  emptyNotifications: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    minHeight: 300,
+  },
+  emptyNotificationsText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  emptyNotificationsSubtext: {
+    fontSize: 14,
+    color: Colors.text.secondary,
+    marginTop: 8,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grays.light,
+    gap: 12,
+  },
+  notificationItemUnread: {
+    backgroundColor: Colors.background.secondary,
+  },
+  notificationIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.grays.light,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationContent: {
+    flex: 1,
+  },
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.base.blackPrimary,
+    marginBottom: 4,
+  },
+  notificationMessage: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+    lineHeight: 18,
+    marginBottom: 4,
+  },
+  notificationTime: {
+    fontSize: 11,
+    color: Colors.grays.dark,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.functional.info,
+    marginTop: 6,
   },
 });

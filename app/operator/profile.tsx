@@ -18,13 +18,17 @@ import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { Button } from '@/components/atoms/Button';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/contexts/AuthContext';
 import { useApp } from '@/contexts/AppContext';
 
 export default function OperatorProfileScreen() {
   const router = useRouter();
-  const { currentUser, logout } = useApp();
+  const { user, logout } = useAuth();
+  const { currentUser } = useApp();
   const [notifications, setNotifications] = useState(true);
   const [soundAlerts, setSoundAlerts] = useState(true);
+
+  const operatorName = user?.name || currentUser?.name || 'Angelo Operador';
 
   const handleLogout = () => {
     Alert.alert(
@@ -92,7 +96,7 @@ export default function OperatorProfileScreen() {
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
-                {(currentUser?.name || 'Roberto Castillo').split(' ').map(n => n[0]).join('').substring(0, 2)}
+                {operatorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
               </Text>
             </View>
             <View style={styles.statusBadge}>
@@ -100,9 +104,9 @@ export default function OperatorProfileScreen() {
               <Text style={styles.statusText}>Activo</Text>
             </View>
           </View>
-          <Text style={styles.profileName}>{currentUser?.name || 'Roberto Castillo'}</Text>
+          <Text style={styles.profileName}>{operatorName}</Text>
           <Text style={styles.profileRole}>Operario de Manufactura</Text>
-          <Text style={styles.profileId}>ID: OP-2024-156</Text>
+          <Text style={styles.profileId}>ID: {user?.id.toUpperCase() || 'OP-2024-156'}</Text>
         </View>
 
         {/* Stats Grid */}

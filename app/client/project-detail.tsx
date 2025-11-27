@@ -50,10 +50,20 @@ export default function ClientProjectDetailScreen() {
       pending: 'Pendiente',
       in_progress: 'En Progreso',
       validation: 'En Validación',
+      approved: 'Aprobado',
       completed: 'Completado',
       cancelled: 'Cancelado',
     };
     return labels[status] || status;
+  };
+
+  // Convertir el status del proyecto a un tipo compatible con StatusBadge
+  const getStatusBadgeType = (status: string): 'pending' | 'in_progress' | 'validation' | 'completed' | 'warning' => {
+    if (status === 'approved') return 'completed';
+    if (status === 'pending' || status === 'in_progress' || status === 'validation' || status === 'completed') {
+      return status as 'pending' | 'in_progress' | 'validation' | 'completed';
+    }
+    return 'pending';
   };
 
   const timeline = [
@@ -112,7 +122,7 @@ export default function ClientProjectDetailScreen() {
             <Text style={styles.projectName}>{project.name}</Text>
           </View>
           <StatusBadge
-            status={project.status}
+            status={getStatusBadgeType(project.status)}
             label={getStatusLabel(project.status)}
           />
         </View>
@@ -120,11 +130,11 @@ export default function ClientProjectDetailScreen() {
         <View style={styles.metaInfo}>
           <View style={styles.metaItem}>
             <Ionicons name="calendar-outline" size={16} color={Colors.text.secondary} />
-            <Text style={styles.metaText}>Inicio: {project.startDate}</Text>
+            <Text style={styles.metaText}>Inicio: {project.createdAt}</Text>
           </View>
           <View style={styles.metaItem}>
             <Ionicons name="time-outline" size={16} color={Colors.text.secondary} />
-            <Text style={styles.metaText}>Estimado: {project.dueDate}</Text>
+            <Text style={styles.metaText}>Última actualización: {project.updatedAt}</Text>
           </View>
         </View>
 
@@ -332,6 +342,13 @@ export default function ClientProjectDetailScreen() {
             title="Ver en Realidad Aumentada 🥽"
             onPress={handleViewAR}
             variant="primary"
+            fullWidth
+            style={styles.actionButton}
+          />
+          <Button
+            title="💬 Ver Comentarios del Proyecto"
+            onPress={() => router.push(`/shared/project-comments?projectId=${id}`)}
+            variant="secondary"
             fullWidth
             style={styles.actionButton}
           />

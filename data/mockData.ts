@@ -15,6 +15,8 @@ export interface Project {
   updatedAt: string;
   parts: number;
   validationRequired: boolean;
+  // Roles con los que se comparte este proyecto (opcional)
+  sharedRoles?: ('designer' | 'client' | 'operator' | 'production')[];
 }
 
 export interface WorkOrder {
@@ -71,29 +73,29 @@ export interface User {
 export const mockUsers: User[] = [
   {
     id: 'u1',
-    name: 'Carlos Mendoza',
-    email: 'cmendoza@siderperuana.com',
+    name: 'Yardy Diseñador',
+    email: 'yardy12@gmail.com',
     role: 'designer',
     company: 'Sider Perú',
   },
   {
     id: 'u2',
-    name: 'Ana Flores',
-    email: 'aflores@minera-ancash.com',
+    name: 'Renzo Cliente',
+    email: 'renzozv@gmail.com',
     role: 'client',
     company: 'Minera Áncash',
   },
   {
     id: 'u3',
-    name: 'Roberto Castillo',
-    email: 'rcastillo@siderperuana.com',
+    name: 'Angelo Operador',
+    email: 'angelo77@gmail.com',
     role: 'operator',
     company: 'Sider Perú',
   },
   {
     id: 'u4',
-    name: 'María Torres',
-    email: 'mtorres@siderperuana.com',
+    name: 'Stephano Centeno',
+    email: 'steph12@gmail.com',
     role: 'production',
     company: 'Sider Perú',
   },
@@ -112,6 +114,7 @@ export const mockProjects: Project[] = [
     updatedAt: '2025-01-15',
     parts: 12,
     validationRequired: true,
+    sharedRoles: ['designer', 'client', 'operator', 'production'],
   },
   {
     id: 'p2',
@@ -124,6 +127,7 @@ export const mockProjects: Project[] = [
     updatedAt: '2025-01-14',
     parts: 8,
     validationRequired: true,
+    sharedRoles: ['designer', 'client', 'operator', 'production'],
   },
   {
     id: 'p3',
@@ -136,6 +140,7 @@ export const mockProjects: Project[] = [
     updatedAt: '2025-01-12',
     parts: 15,
     validationRequired: false,
+    sharedRoles: ['designer', 'client', 'operator', 'production'],
   },
   {
     id: 'p4',
@@ -148,6 +153,7 @@ export const mockProjects: Project[] = [
     updatedAt: '2025-01-12',
     parts: 20,
     validationRequired: true,
+    sharedRoles: ['designer', 'client'],
   },
 ];
 
@@ -272,32 +278,98 @@ export const mockAssemblySteps: AssemblyStep[] = [
 
 // MOCK COMMENTS
 export const mockComments: Comment[] = [
+  // Proyecto p1 - Estructura de Soporte HSE-2024
   {
     id: 'c1',
     projectId: 'p1',
     userId: 'u2',
-    userName: 'Ana Flores',
+    userName: 'Renzo Cliente',
     userRole: 'client',
     content: 'El diseño se ve sólido, pero necesitamos validar resistencia a sismos zona 4.',
-    timestamp: '2024-01-19T10:30:00Z',
+    timestamp: '2025-01-15T10:30:00Z',
   },
   {
     id: 'c2',
     projectId: 'p1',
     userId: 'u1',
-    userName: 'Carlos Mendoza',
+    userName: 'Yardy Diseñador',
     userRole: 'designer',
-    content: 'Entendido. Adjunto análisis FEM con cargas sísmicas actualizadas.',
-    timestamp: '2024-01-19T14:15:00Z',
+    content: 'Entendido. Adjunto análisis FEM con cargas sísmicas actualizadas. El factor de seguridad cumple con norma E.090.',
+    timestamp: '2025-01-15T14:15:00Z',
   },
   {
     id: 'c3',
+    projectId: 'p1',
+    userId: 'u4',
+    userName: 'Stephano Centeno',
+    userRole: 'production',
+    content: 'He revisado el diseño. Podemos iniciar la fabricación la próxima semana. Necesitamos confirmación del cliente.',
+    timestamp: '2025-01-16T09:00:00Z',
+  },
+  {
+    id: 'c4',
+    projectId: 'p1',
+    userId: 'u2',
+    userName: 'Renzo Cliente',
+    userRole: 'client',
+    content: 'Perfecto, aprobado. Pueden proceder con la fabricación.',
+    timestamp: '2025-01-16T10:45:00Z',
+  },
+  {
+    id: 'c5',
+    projectId: 'p1',
+    userId: 'u3',
+    userName: 'Angelo Operador',
+    userRole: 'operator',
+    content: 'He recibido la orden de trabajo WO-HSE2024-001. Comenzamos mañana con la base de montaje.',
+    timestamp: '2025-01-17T08:00:00Z',
+  },
+  {
+    id: 'c6',
+    projectId: 'p1',
+    userId: 'u3',
+    userName: 'Angelo Operador',
+    userRole: 'operator',
+    content: 'Reporte de avance: Base verificada, columnas instaladas. Todo según especificaciones. 60% completado.',
+    timestamp: '2025-01-18T16:30:00Z',
+  },
+
+  // Proyecto p2 - Prototipo Chute Transferencia
+  {
+    id: 'c7',
     projectId: 'p2',
     userId: 'u3',
-    userName: 'Roberto Castillo',
+    userName: 'Angelo Operador',
     userRole: 'operator',
-    content: 'El ángulo de descarga en la zona B está muy cerrado para el montaje.',
-    timestamp: '2024-01-18T08:45:00Z',
+    content: 'El ángulo de descarga en la zona B está muy cerrado para el montaje. ¿Podemos ajustarlo a 35°?',
+    timestamp: '2025-01-12T08:45:00Z',
+  },
+  {
+    id: 'c8',
+    projectId: 'p2',
+    userId: 'u1',
+    userName: 'Yardy Diseñador',
+    userRole: 'designer',
+    content: 'Buena observación Angelo. He ajustado el ángulo a 35° y actualizado el modelo CAD. Por favor revisa la nueva versión.',
+    timestamp: '2025-01-12T11:20:00Z',
+  },
+  {
+    id: 'c9',
+    projectId: 'p2',
+    userId: 'u4',
+    userName: 'Stephano Centeno',
+    userRole: 'production',
+    content: 'El cambio de ángulo afecta el material requerido. Necesitamos 2 planchas adicionales de 6mm.',
+    timestamp: '2025-01-13T09:15:00Z',
+  },
+  {
+    id: 'c10',
+    projectId: 'p2',
+    userId: 'u2',
+    userName: 'Renzo Cliente',
+    userRole: 'client',
+    content: 'Aprobado el cambio. La funcionalidad es más importante. Proceder con las planchas adicionales.',
+    timestamp: '2025-01-13T14:00:00Z',
   },
 ];
 

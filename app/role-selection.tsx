@@ -38,12 +38,20 @@ const roles: RoleOption[] = [
     buttonLabels: ['Ver AR', 'Aprobar'],
   },
   {
+    id: 'operator',
+    title: 'Operador',
+    description: 'Recibe órdenes de trabajo, escanea QR y sigue guías de ensamblaje en AR',
+    icon: 'folder-outline',
+    route: '/operator/work-orders',
+    buttonLabels: ['Escanear QR', 'Ensamblar'],
+  },
+  {
     id: 'production',
     title: 'Producción',
-    description: 'Guías AR paso a paso, validación en tiempo real y reportes',
+    description: 'Supervisa proyectos, asigna órdenes de trabajo y revisa métricas',
     icon: 'folder-outline',
     route: '/production/dashboard',
-    buttonLabels: ['Ensamblaje', 'Reportes'],
+    buttonLabels: ['Dashboard', 'Métricas'],
   },
 ];
 

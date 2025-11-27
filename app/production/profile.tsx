@@ -18,11 +18,11 @@ import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { Button } from '@/components/atoms/Button';
 import { Ionicons } from '@expo/vector-icons';
-import { useApp } from '@/contexts/AppContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProductionProfileScreen() {
   const router = useRouter();
-  const { currentUser, logout } = useApp();
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [autoAssign, setAutoAssign] = useState(false);
 
@@ -52,7 +52,7 @@ export default function ProductionProfileScreen() {
   ];
 
   const teamMembers = [
-    { name: 'Roberto Castillo', role: 'Operario Senior', status: 'active', tasks: 3 },
+    { name: 'Angelo Operador', role: 'Operario Senior', status: 'active', tasks: 3 },
     { name: 'Ana Martínez', role: 'Operario', status: 'active', tasks: 2 },
     { name: 'Juan Pérez', role: 'Operario Junior', status: 'break', tasks: 1 },
     { name: 'María López', role: 'Operario', status: 'active', tasks: 4 },
@@ -87,14 +87,14 @@ export default function ProductionProfileScreen() {
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
-                {(currentUser?.name || 'Luis Sánchez').split(' ').map(n => n[0]).join('').substring(0, 2)}
+                {(user?.name || 'Luis Sánchez').split(' ').map(n => n[0]).join('').substring(0, 2)}
               </Text>
             </View>
             <View style={styles.roleBadge}>
               <Ionicons name="briefcase" size={16} color={Colors.background.secondary} />
             </View>
           </View>
-          <Text style={styles.profileName}>{currentUser?.name || 'Luis Sánchez'}</Text>
+          <Text style={styles.profileName}>{user?.name || 'Luis Sánchez'}</Text>
           <Text style={styles.profileRole}>Supervisor de Producción</Text>
           <Text style={styles.profileId}>ID: PROD-2024-089</Text>
         </View>
@@ -305,7 +305,7 @@ export default function ProductionProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.base.whitePrimary,
   },
   header: {
     flexDirection: 'row',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderBottomWidth: 1,
     borderBottomColor: Colors.background.border,
   },

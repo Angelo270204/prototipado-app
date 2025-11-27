@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/DesignSystem';
 import { Button } from '@/components/atoms/Button';
-import { mockWorkOrders, mockAssemblySteps, AssemblyStep } from '@/data/mockData';
+import { mockWorkOrders, mockAssemblySteps } from '@/data/mockData';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AssemblyGuideScreen() {
@@ -26,6 +26,11 @@ export default function AssemblyGuideScreen() {
   
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+
+  // Actualizar el progreso cuando se completan pasos
+  useEffect(() => {
+    // Este efecto se ejecuta cada vez que cambia completedSteps
+  }, [completedSteps]);
 
   if (!workOrder) {
     return (
@@ -38,11 +43,6 @@ export default function AssemblyGuideScreen() {
   const currentStep = steps[currentStepIndex];
   const completedCount = completedSteps.length;
   const progress = (completedCount / steps.length) * 100;
-
-  // Actualizar el progreso cuando se completan pasos
-  useEffect(() => {
-    // Este efecto se ejecuta cada vez que cambia completedSteps
-  }, [completedSteps]);
 
   const handleCompleteStep = () => {
     if (currentStep && !completedSteps.includes(currentStep.id)) {
@@ -216,21 +216,22 @@ export default function AssemblyGuideScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.base.whitePrimary,
   },
   header: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.md,
+    backgroundColor: Colors.base.whitePrimary,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.background.secondary,
+    borderBottomColor: Colors.grays.light,
   },
   backButton: {
     marginBottom: Spacing.sm,
   },
   backButtonText: {
     fontSize: Typography.sizes.body,
-    color: Colors.success,
+    color: Colors.functional.success,
     fontWeight: Typography.weights.semibold,
   },
   headerInfo: {
@@ -249,9 +250,9 @@ const styles = StyleSheet.create({
   progressContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.background.border,
+    borderBottomColor: Colors.grays.light,
   },
   progressInfo: {
     flexDirection: 'row',
@@ -266,18 +267,18 @@ const styles = StyleSheet.create({
   progressPercentage: {
     fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.bold,
-    color: Colors.primary.main,
+    color: Colors.functional.success,
   },
   progressBar: {
     height: 12,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.grays.light,
     borderRadius: BorderRadius.sm,
     overflow: 'hidden',
     marginBottom: Spacing.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: Colors.primary.main,
+    backgroundColor: Colors.functional.success,
     borderRadius: BorderRadius.sm,
   },
   progressStats: {
@@ -291,6 +292,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: Colors.background.secondary,
   },
   contentContainer: {
     padding: Spacing.lg,
@@ -304,7 +306,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: BorderRadius.round,
-    backgroundColor: Colors.warning,
+    backgroundColor: Colors.functional.success,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -312,7 +314,7 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontSize: Typography.sizes.h2,
     fontWeight: Typography.weights.bold,
-    color: Colors.background.secondary,
+    color: Colors.base.whitePrimary,
   },
   stepTitleContainer: {
     flex: 1,
@@ -335,7 +337,7 @@ const styles = StyleSheet.create({
   completedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.success.background,
+    backgroundColor: '#D1FAE5',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs / 2,
     borderRadius: BorderRadius.sm,
@@ -343,11 +345,11 @@ const styles = StyleSheet.create({
   },
   completedText: {
     fontSize: Typography.sizes.caption,
-    color: Colors.success.main,
+    color: Colors.functional.success,
     fontWeight: Typography.weights.semibold,
   },
   descriptionCard: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeight.relaxed * Typography.sizes.body,
   },
   toolsCard: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -385,17 +387,17 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
   },
   warningsCard: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.warning,
+    borderLeftColor: Colors.functional.warning,
   },
   warningTitle: {
     fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.semibold,
-    color: Colors.warning,
+    color: Colors.functional.warning,
     marginBottom: Spacing.sm,
   },
   warningItem: {
@@ -412,22 +414,22 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.md,
   },
   verificationCard: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: '#D1FAE5',
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.success,
+    borderLeftColor: Colors.functional.success,
     marginBottom: Spacing.md,
   },
   verificationText: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.success,
+    color: Colors.functional.success,
     fontWeight: Typography.weights.medium,
   },
   bottomActions: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     borderTopWidth: 1,
-    borderTopColor: Colors.background.secondary,
+    borderTopColor: Colors.grays.light,
     padding: Spacing.md,
   },
   actionButtons: {
@@ -442,7 +444,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: Typography.sizes.body,
-    color: Colors.error,
+    color: Colors.functional.error,
     textAlign: 'center',
     marginTop: Spacing.xl,
   },

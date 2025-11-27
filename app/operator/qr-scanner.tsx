@@ -10,14 +10,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width, height } = Dimensions.get('window');
 
 // Códigos QR de ejemplo para simular
 const MOCK_QR_CODES = [
@@ -294,55 +291,56 @@ const styles = StyleSheet.create({
     lineHeight: Typography.sizes.body * Typography.lineHeight.relaxed,
   },
   bottomActions: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.base.whitePrimary,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.lg,
-    gap: Spacing.md,
     ...Shadows.medium,
   },
   simulateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.primary.main,
+    backgroundColor: Colors.base.blackPrimary,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.md,
-    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
     ...Shadows.small,
   },
   simulateButtonText: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
-    color: Colors.primary.contrast,
+    color: Colors.base.whitePrimary,
+    marginLeft: Spacing.sm,
   },
   manualButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.background.border,
     paddingVertical: Spacing.md,
-    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   manualButtonText: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.medium,
-    color: Colors.primary.main,
+    color: Colors.base.blackPrimary,
+    marginLeft: Spacing.sm,
   },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.info.background,
+    backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    gap: Spacing.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.functional.info,
   },
   infoText: {
     flex: 1,
     fontSize: Typography.sizes.bodySmall,
     color: Colors.text.secondary,
-    lineHeight: Typography.sizes.bodySmall * Typography.lineHeight.normal,
+    marginLeft: Spacing.sm,
+    lineHeight: Typography.sizes.bodySmall * Typography.lineHeight.relaxed,
   },
 });

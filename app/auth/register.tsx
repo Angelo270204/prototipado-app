@@ -34,10 +34,13 @@ export default function RegisterScreen() {
 
   const handleRegister = () => {
     // Validación básica
-    if (!formData.fullName || !formData.email || !formData.password) {
+    if (!formData.fullName || !formData.email || !formData.role || !formData.password) {
       return;
     }
     if (formData.password !== formData.confirmPassword) {
+      return;
+    }
+    if (formData.password.length < 8) {
       return;
     }
     if (!acceptTerms) {
@@ -45,16 +48,18 @@ export default function RegisterScreen() {
     }
 
     // Por ahora solo navegamos - la lógica se agregará después
-    router.push('/auth/login');
+    router.replace('/auth/login');
   };
 
   const isFormValid = () => {
     return (
       formData.fullName &&
       formData.email &&
+      formData.role &&
       formData.password &&
       formData.confirmPassword &&
       formData.password === formData.confirmPassword &&
+      formData.password.length >= 8 &&
       acceptTerms
     );
   };
@@ -290,36 +295,11 @@ export default function RegisterScreen() {
             <Text style={styles.registerButtonText}>Crear Cuenta</Text>
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.dividerContainer}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>O regístrate con</Text>
-            <View style={styles.divider} />
-          </View>
-
-          {/* Social Register Buttons */}
-          <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity 
-              style={styles.socialButton}
-              onPress={() => router.push('/auth/login')}
-            >
-              <Ionicons name="logo-google" size={24} color="#DB4437" />
-              <Text style={styles.socialButtonText}>Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.socialButton}
-              onPress={() => router.push('/auth/login')}
-            >
-              <Ionicons name="logo-windows" size={24} color="#00A4EF" />
-              <Text style={styles.socialButtonText}>Microsoft</Text>
-            </TouchableOpacity>
-          </View>
 
           {/* Login Link */}
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>¿Ya tienes una cuenta? </Text>
-            <TouchableOpacity onPress={() => router.push('/auth/login')}>
+            <TouchableOpacity onPress={() => router.replace('/auth/login')}>
               <Text style={styles.loginLink}>Inicia sesión</Text>
             </TouchableOpacity>
           </View>
@@ -465,43 +445,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
     color: Colors.primary.contrast,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.lg,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.background.border,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.md,
-    fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
-  },
-  socialButtonsContainer: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background.primary,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.background.border,
-    height: 44,
-    gap: Spacing.xs,
-  },
-  socialButtonText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.medium,
-    color: Colors.text.primary,
   },
   loginContainer: {
     flexDirection: 'row',

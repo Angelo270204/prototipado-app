@@ -16,8 +16,10 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/DesignSystem';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function DesignerProfileScreen() {
+  const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -45,7 +47,10 @@ export default function DesignerProfileScreen() {
         {
           text: 'Cerrar Sesión',
           style: 'destructive',
-          onPress: () => router.push('/auth/login'),
+          onPress: () => {
+            logout();
+            router.replace('/auth/login');
+          },
         },
       ]
     );
@@ -77,8 +82,8 @@ export default function DesignerProfileScreen() {
               <Ionicons name="person" size={48} color={Colors.base.whitePrimary} />
             </View>
           </View>
-          <Text style={styles.userName}>Hola, Jhony Walker</Text>
-          <Text style={styles.userEmail}>jhony.walker@gmail.com</Text>
+          <Text style={styles.userName}>Hola, {user?.name || 'Usuario'}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'usuario@ejemplo.com'}</Text>
         </View>
 
         {/* Información Personal */}

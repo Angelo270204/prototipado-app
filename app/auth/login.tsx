@@ -8,35 +8,54 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Image,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = () => {
-    // Por ahora solo navegamos - la lógica se agregará después
     if (email && password) {
-      // Simular login exitoso
-      router.push('/role-selection');
+      const success = login(email, password);
+
+      if (success) {
+        // Obtener el rol basado en el email para redirigir inmediatamente
+        let targetRoute = '/role-selection';
+
+        if (email === 'yardy12@gmail.com') {
+          targetRoute = '/designer/projects';
+        } else if (email === 'renzozv@gmail.com') {
+          targetRoute = '/client/projects';
+        } else if (email === 'angelo77@gmail.com') {
+          targetRoute = '/operator/work-orders';
+        } else if (email === 'steph12@gmail.com') {
+          targetRoute = '/production/dashboard';
+        }
+
+        router.replace(targetRoute as any);
+      } else {
+        Alert.alert(
+          'Error de autenticación',
+          'Correo o contraseña incorrectos. Verifica tus credenciales.',
+          [{ text: 'OK' }]
+        );
+      }
+    } else {
+      Alert.alert(
+        'Campos incompletos',
+        'Por favor ingresa tu correo y contraseña',
+        [{ text: 'OK' }]
+      );
     }
-  };
-
-  const handleGoogleLogin = () => {
-    // Placeholder para login con Google
-    router.push('/role-selection');
-  };
-
-  const handleMicrosoftLogin = () => {
-    // Placeholder para login con Microsoft
-    router.push('/role-selection');
   };
 
   return (
@@ -145,30 +164,11 @@ export default function LoginScreen() {
             <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.dividerContainer}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>O continuar con</Text>
-            <View style={styles.divider} />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
-              <Ionicons name="logo-google" size={24} color="#DB4437" />
-              <Text style={styles.socialButtonText}>Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.socialButton} onPress={handleMicrosoftLogin}>
-              <Ionicons name="logo-windows" size={24} color="#00A4EF" />
-              <Text style={styles.socialButtonText}>Microsoft</Text>
-            </TouchableOpacity>
-          </View>
 
           {/* Register Link */}
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>¿No tienes una cuenta? </Text>
-            <TouchableOpacity onPress={() => router.push('/auth/register')}>
+            <TouchableOpacity onPress={() => router.replace('/auth/register')}>
               <Text style={styles.registerLink}>Regístrate aquí</Text>
             </TouchableOpacity>
           </View>
@@ -186,7 +186,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.auth.background,
+    backgroundColor: Colors.base.whitePrimary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -202,29 +202,33 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: BorderRadius.xxl,
-    backgroundColor: Colors.auth.cardBackground,
+    backgroundColor: Colors.base.whitePrimary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
     ...Shadows.medium,
+    borderWidth: 2,
+    borderColor: Colors.grays.light,
   },
   title: {
     fontSize: Typography.sizes.h1,
     fontWeight: Typography.weights.bold,
-    color: Colors.auth.title,
+    color: Colors.base.blackPrimary,
     marginBottom: Spacing.xs,
   },
   subtitle: {
     fontSize: Typography.sizes.bodySmall,
-    color: Colors.auth.subtitle,
+    color: Colors.text.secondary,
     textAlign: 'center',
     maxWidth: 280,
   },
   formContainer: {
-    backgroundColor: Colors.auth.cardBackground,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     ...Shadows.medium,
+    borderWidth: 1,
+    borderColor: Colors.grays.light,
   },
   formTitle: {
     fontSize: Typography.sizes.h2,
@@ -239,16 +243,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.medium,
-    color: Colors.auth.inputLabel,
+    color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.auth.inputBackground,
+    backgroundColor: Colors.base.whitePrimary,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.auth.inputBorder,
+    borderColor: Colors.grays.medium,
     height: 44,
     paddingHorizontal: Spacing.md,
   },
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: Typography.sizes.body,
-    color: Colors.auth.inputText,
+    color: Colors.base.blackPrimary,
     height: '100%',
   },
   eyeIcon: {
@@ -298,7 +302,7 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   loginButton: {
-    backgroundColor: Colors.auth.buttonBackground,
+    backgroundColor: Colors.base.blackPrimary,
     borderRadius: BorderRadius.md,
     height: 44,
     alignItems: 'center',
@@ -313,44 +317,7 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
-    color: Colors.auth.buttonText,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.lg,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.grays.medium,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.md,
-    fontSize: Typography.sizes.bodySmall,
-    color: Colors.text.secondary,
-  },
-  socialButtonsContainer: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.base.whitePrimary,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.grays.medium,
-    height: 44,
-    gap: Spacing.xs,
-  },
-  socialButtonText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.medium,
-    color: Colors.text.primary,
+    color: Colors.base.whitePrimary,
   },
   registerContainer: {
     flexDirection: 'row',

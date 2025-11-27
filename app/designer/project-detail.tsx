@@ -314,6 +314,14 @@ export default function DesignerProjectDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: '#10B981' }]}
+              onPress={() => router.push(`/shared/project-comments?projectId=${id}`)}
+            >
+              <Text style={styles.actionButtonIcon}>💬</Text>
+              <Text style={styles.actionButtonText}>Comentarios</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: '#1E40AF' }]}
               onPress={() => Alert.alert('Editar', 'Abriendo editor de proyecto...')}
             >

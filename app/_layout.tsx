@@ -1,81 +1,25 @@
-/**
- * Root Layout
- * Configuración principal de navegación y contexto global
- */
-
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-import { AppProvider } from '@/contexts/AppContext';
-import { Colors } from '@/constants/DesignSystem';
-
-// Tema claro personalizado
-const LightTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: Colors.base.blackPrimary,
-    background: Colors.base.whitePrimary,
-    card: Colors.grays.light,
-    text: Colors.base.blackPrimary,
-    border: Colors.grays.medium,
-    notification: Colors.error.main,
-  },
-};
-
-export const unstable_settings = {
-  initialRouteName: 'index',
-};
+import { AuthProvider } from '../contexts/AuthContext';
+import { AppProvider } from '../contexts/AppContext';
+import { ChatProvider } from '../contexts/ChatContext';
 
 export default function RootLayout() {
-  return (
-    <AppProvider>
-      <ThemeProvider value={LightTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: Colors.base.whitePrimary },
-          }}
-        >
-          {/* Entry Point */}
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          
-          {/* Authentication Screens */}
-          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/register" options={{ headerShown: false }} />
-          
-          {/* Role Selection */}
-          <Stack.Screen name="role-selection" options={{ headerShown: false }} />
-          
-          {/* Designer Screens */}
-          <Stack.Screen name="designer/projects" options={{ headerShown: false }} />
-          <Stack.Screen name="designer/project-detail" options={{ headerShown: false }} />
-          <Stack.Screen name="designer/new-project" options={{ headerShown: false }} />
-          <Stack.Screen name="designer/ar-viewer" options={{ headerShown: false }} />
-          <Stack.Screen name="designer/profile" options={{ headerShown: false }} />
-          
-          {/* Client Screens */}
-          <Stack.Screen name="client/projects" options={{ headerShown: false }} />
-          <Stack.Screen name="client/project-detail" options={{ headerShown: false }} />
-          <Stack.Screen name="client/ar-view" options={{ headerShown: false }} />
-          <Stack.Screen name="client/profile" options={{ headerShown: false }} />
-          
-          {/* Operator Screens */}
-          <Stack.Screen name="operator/work-orders" options={{ headerShown: false }} />
-          <Stack.Screen name="operator/assembly-guide" options={{ headerShown: false }} />
-          <Stack.Screen name="operator/qr-scanner" options={{ headerShown: false }} />
-          <Stack.Screen name="operator/ar-assembly" options={{ headerShown: false }} />
-          <Stack.Screen name="operator/profile" options={{ headerShown: false }} />
-          
-          {/* Production Screens */}
-          <Stack.Screen name="production/dashboard" options={{ headerShown: false }} />
-          <Stack.Screen name="production/work-orders" options={{ headerShown: false }} />
-          <Stack.Screen name="production/metrics" options={{ headerShown: false }} />
-          <Stack.Screen name="production/profile" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="dark" />
-      </ThemeProvider>
-    </AppProvider>
-  );
+    return (
+        <AuthProvider>
+            <ChatProvider>
+                <AppProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="index" />
+                        <Stack.Screen name="auth/login" />
+                        <Stack.Screen name="role-selection" />
+                        <Stack.Screen name="designer/projects" />
+                        <Stack.Screen name="client/projects" />
+                        <Stack.Screen name="operator/work-orders" />
+                        <Stack.Screen name="production/dashboard" />
+                        <Stack.Screen name="shared/project-comments" />
+                    </Stack>
+                </AppProvider>
+            </ChatProvider>
+        </AuthProvider>
+    );
 }

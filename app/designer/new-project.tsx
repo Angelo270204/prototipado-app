@@ -22,7 +22,7 @@ import { useApp } from '@/contexts/AppContext';
 
 export default function NewProjectScreen() {
   const router = useRouter();
-  const { addProject } = useApp();
+  const { addAndShareProject } = useApp();
   const [formData, setFormData] = useState({
     projectName: '',
     clientName: '',
@@ -53,7 +53,8 @@ export default function NewProjectScreen() {
       validationRequired: true,
     };
 
-    addProject(newProject);
+    // Crear y compartir automáticamente con los 4 roles
+    addAndShareProject(newProject, { shareWithRoles: ['designer', 'client', 'operator', 'production'], createChat: true, notify: true });
 
     // Limpiar formulario
     setFormData({
@@ -66,7 +67,7 @@ export default function NewProjectScreen() {
     // Mostrar mensaje de éxito y volver a la lista
     Alert.alert(
       '✅ Proyecto Creado Exitosamente',
-      `"${formData.projectName}" ha sido creado y está listo para validación AR.`,
+      `"${formData.projectName}" ha sido creado y compartido con el equipo (Cliente, Operador, Producción).`,
       [
         {
           text: 'OK',
