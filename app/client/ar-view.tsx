@@ -203,6 +203,21 @@ export default function ClientARViewScreen() {
           </View>
         </View>
 
+        {/* Prominent Approve Button - destacado para test de usabilidad */}
+        <TouchableOpacity
+          style={styles.prominentApproveButton}
+          onPress={handleApprove}
+          activeOpacity={0.8}
+        >
+          <View style={styles.prominentApproveIcon}>
+            <Ionicons name="checkmark-circle" size={32} color={Colors.base.whitePrimary} />
+          </View>
+          <View style={styles.prominentApproveContent}>
+            <Text style={styles.prominentApproveTitle}>✅ APROBAR DISEÑO</Text>
+            <Text style={styles.prominentApproveSubtitle}>Confirmar que el modelo cumple con los requisitos</Text>
+          </View>
+        </TouchableOpacity>
+
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
@@ -221,6 +236,15 @@ export default function ClientARViewScreen() {
             <Text style={styles.rejectButtonText}>Rechazar</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Comentarios Section */}
+        <TouchableOpacity
+          style={styles.commentsButton}
+          onPress={() => Alert.alert('Comentarios', 'Aquí puedes agregar comentarios sobre el diseño')}
+        >
+          <Ionicons name="chatbubble-outline" size={20} color={Colors.base.blackPrimary} />
+          <Text style={styles.commentsButtonText}>Agregar Comentarios</Text>
+        </TouchableOpacity>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -432,5 +456,58 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.base.whitePrimary,
+  },
+  // Estilos para botón prominente de Aprobar
+  prominentApproveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.functional.success,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+    shadowColor: Colors.functional.success,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  prominentApproveIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  prominentApproveContent: {
+    flex: 1,
+  },
+  prominentApproveTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.base.whitePrimary,
+    marginBottom: 4,
+  },
+  prominentApproveSubtitle: {
+    fontSize: 13,
+    color: Colors.base.whitePrimary,
+    opacity: 0.9,
+  },
+  // Botón de comentarios
+  commentsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.grays.light,
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+    marginBottom: 20,
+  },
+  commentsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.base.blackPrimary,
   },
 });

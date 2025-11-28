@@ -147,6 +147,20 @@ export default function RoleSelectionScreen() {
             </View>
           ))}
         </View>
+
+        {/* Test de Interacción Button */}
+        <TouchableOpacity
+          style={styles.testButton}
+          onPress={() => router.push('/shared/test-setup' as any)}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="clipboard-outline" size={24} color={Colors.base.whitePrimary} />
+          <View style={styles.testButtonContent}>
+            <Text style={styles.testButtonTitle}>🧪 Iniciar Test de Interacción</Text>
+            <Text style={styles.testButtonSubtitle}>Evaluar usabilidad con métricas SUS</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color={Colors.base.whitePrimary} />
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -300,5 +314,29 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.caption,
     color: Colors.stats.text,
     textAlign: 'center',
+  },
+  testButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.functional.info,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginTop: Spacing.xl,
+    gap: Spacing.md,
+    ...Shadows.medium,
+  },
+  testButtonContent: {
+    flex: 1,
+  },
+  testButtonTitle: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.whitePrimary,
+  },
+  testButtonSubtitle: {
+    fontSize: Typography.sizes.caption,
+    color: Colors.base.whitePrimary,
+    opacity: 0.8,
+    marginTop: 2,
   },
 });
