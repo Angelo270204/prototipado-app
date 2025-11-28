@@ -79,7 +79,7 @@ export function TestMetricsProvider({ children }: { children: React.ReactNode })
   const [isTestMode, setTestMode] = useState(false);
 
   const generateSessionId = () => {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   };
 
   const startSession = useCallback((profile: TestSession['participantProfile']) => {
