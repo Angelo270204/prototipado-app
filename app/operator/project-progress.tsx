@@ -18,7 +18,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/contexts/AppContext';
-import Slider from '@react-native-community/slider';
 
 export default function ProjectProgressScreen() {
   const router = useRouter();
@@ -121,19 +120,25 @@ export default function ProjectProgressScreen() {
           <View style={styles.updateCard}>
             <Text style={styles.newProgressLabel}>Nuevo Progreso: {localProgress}%</Text>
             
-            {/* Slider */}
-            <View style={styles.sliderContainer}>
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={100}
-                step={5}
-                value={localProgress}
-                onValueChange={setLocalProgress}
-                minimumTrackTintColor={getProgressColor(localProgress)}
-                maximumTrackTintColor={Colors.grays.light}
-                thumbTintColor={getProgressColor(localProgress)}
-              />
+            {/* Controles de Progreso */}
+            <View style={styles.progressControlContainer}>
+              <TouchableOpacity 
+                style={styles.progressControlButton}
+                onPress={() => setLocalProgress(Math.max(0, localProgress - 5))}
+              >
+                <Ionicons name="remove-circle" size={32} color={Colors.primary.main} />
+              </TouchableOpacity>
+              <View style={styles.progressDisplayContainer}>
+                <Text style={[styles.progressDisplayText, { color: getProgressColor(localProgress) }]}>
+                  {localProgress}%
+                </Text>
+              </View>
+              <TouchableOpacity 
+                style={styles.progressControlButton}
+                onPress={() => setLocalProgress(Math.min(100, localProgress + 5))}
+              >
+                <Ionicons name="add-circle" size={32} color={Colors.primary.main} />
+              </TouchableOpacity>
             </View>
 
             {/* Quick Progress Buttons */}
@@ -366,12 +371,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: Spacing.md,
   },
-  sliderContainer: {
+  progressControlContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: Spacing.lg,
+    gap: Spacing.lg,
   },
-  slider: {
-    width: '100%',
-    height: 40,
+  progressControlButton: {
+    padding: Spacing.sm,
+  },
+  progressDisplayContainer: {
+    backgroundColor: Colors.background.primary,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+  },
+  progressDisplayText: {
+    fontSize: Typography.sizes.h1,
+    fontWeight: Typography.weights.bold,
   },
   quickProgressButtons: {
     flexDirection: 'row',
