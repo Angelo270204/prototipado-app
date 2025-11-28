@@ -47,6 +47,7 @@ export default function ClientMainScreen() {
       designer: mockDesignerNamePlaceholder(),
       sharedDate: p.createdAt,
       status: (p.status === 'validation' || p.status === 'pending') ? 'pending' : p.status,
+      progress: p.progress || 0,
       hasComments: true,
       commentCount: 0,
     }));
@@ -243,6 +244,14 @@ export default function ClientMainScreen() {
               <Text style={styles.projectName}>{project.name}</Text>
               <Text style={styles.projectDesigner}>Por {project.designer}</Text>
               <Text style={styles.projectDate}>Compartido el {project.sharedDate}</Text>
+              
+              {/* Barra de Progreso */}
+              <View style={styles.projectProgressContainer}>
+                <View style={styles.projectProgressBar}>
+                  <View style={[styles.projectProgressFill, { width: `${project.progress}%` }]} />
+                </View>
+                <Text style={styles.projectProgressText}>{project.progress}%</Text>
+              </View>
             </View>
 
             {/* Badge de estado */}
@@ -715,6 +724,30 @@ const styles = StyleSheet.create({
   projectDate: {
     fontSize: 12,
     color: Colors.text.secondary,
+  },
+  projectProgressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 8,
+  },
+  projectProgressBar: {
+    flex: 1,
+    height: 6,
+    backgroundColor: Colors.grays.light,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  projectProgressFill: {
+    height: '100%',
+    backgroundColor: Colors.functional.success,
+    borderRadius: 3,
+  },
+  projectProgressText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.functional.success,
+    minWidth: 32,
   },
   statusBadge: {
     alignSelf: 'flex-start',
