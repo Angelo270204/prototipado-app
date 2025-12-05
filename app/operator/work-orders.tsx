@@ -241,7 +241,7 @@ export default function OperatorWorkOrdersScreen() {
               <TouchableOpacity
                 key={p.id}
                 style={styles.projectRow}
-                onPress={() => router.push(`/shared/project-comments?projectId=${p.id}`)}
+                onPress={() => router.push(`/operator/project-progress?projectId=${p.id}`)}
               >
                 <View style={styles.projectIcon}>
                   <Text style={styles.projectIconText}>🛠️</Text>
@@ -249,6 +249,13 @@ export default function OperatorWorkOrdersScreen() {
                 <View style={styles.projectInfo}>
                   <Text style={styles.projectName}>{p.name}</Text>
                   <Text style={styles.projectMeta}>Cliente: {p.client} • {p.createdAt}</Text>
+                  {/* Barra de progreso */}
+                  <View style={styles.projectProgressContainer}>
+                    <View style={styles.projectProgressBar}>
+                      <View style={[styles.projectProgressFill, { width: `${p.progress}%` }]} />
+                    </View>
+                    <Text style={styles.projectProgressText}>{p.progress}%</Text>
+                  </View>
                 </View>
                 <View style={styles.projectStatusBadge}>
                   <Text style={styles.projectStatusText}>{p.status}</Text>
@@ -591,6 +598,30 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.text.secondary,
     marginTop: 2,
+  },
+  projectProgressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 8,
+  },
+  projectProgressBar: {
+    flex: 1,
+    height: 6,
+    backgroundColor: Colors.grays.light,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  projectProgressFill: {
+    height: '100%',
+    backgroundColor: Colors.functional.success,
+    borderRadius: 3,
+  },
+  projectProgressText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.functional.success,
+    minWidth: 32,
   },
   projectStatusBadge: {
     paddingHorizontal: 10,

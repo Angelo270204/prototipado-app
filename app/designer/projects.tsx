@@ -207,6 +207,22 @@ export default function DesignerMainScreen() {
 
   const renderProjects = () => (
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      {/* Quick Action - Importar CAD (prominente para test de usabilidad) */}
+      <TouchableOpacity
+        style={styles.importCADButton}
+        onPress={() => setSelectedTab('import')}
+        activeOpacity={0.8}
+      >
+        <View style={styles.importCADIconContainer}>
+          <Ionicons name="cloud-upload-outline" size={32} color={Colors.base.whitePrimary} />
+        </View>
+        <View style={styles.importCADContent}>
+          <Text style={styles.importCADTitle}>📁 IMPORTAR CAD</Text>
+          <Text style={styles.importCADSubtitle}>Carga tu archivo .dwg, .step, .stl, .obj</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={24} color={Colors.base.whitePrimary} />
+      </TouchableOpacity>
+
       {/* Section Header */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>MIS PROYECTOS</Text>
@@ -755,6 +771,42 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: Colors.base.blackPrimary,
     marginBottom: 20,
+  },
+  // Nuevo estilo para botón prominente de Importar CAD
+  importCADButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.functional.info,
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    ...Shadows.medium,
+  },
+  importCADIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.md,
+  },
+  importCADContent: {
+    flex: 1,
+  },
+  importCADTitle: {
+    fontSize: Typography.sizes.h3,
+    fontWeight: Typography.weights.bold,
+    color: Colors.base.whitePrimary,
+    marginBottom: Spacing.xs,
+  },
+  importCADSubtitle: {
+    fontSize: Typography.sizes.bodySmall,
+    color: Colors.base.whitePrimary,
+    opacity: 0.9,
   },
   sectionHeader: {
     flexDirection: 'row',

@@ -29,6 +29,7 @@ interface AppContextType {
     options?: { shareWithRoles?: User['role'][]; createChat?: boolean; notify?: boolean }
   ) => Promise<Project>;
   updateProjectStatus: (projectId: string, status: ProjectStatus) => void;
+  updateProjectProgress: (projectId: string, progress: number) => void;
   shareProjectWithClient: (projectId: string, clientId?: string) => void;
   approveProject: (projectId: string) => void;
   rejectProject: (projectId: string, reason: string) => void;
@@ -159,6 +160,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     );
   };
 
+  const updateProjectProgress = (projectId: string, progress: number) => {
+    setProjects(prev =>
+      prev.map(p => (p.id === projectId ? { ...p, progress: Math.min(100, Math.max(0, progress)) } : p))
+    );
+    console.log('📊 [AppContext] Progreso actualizado:', projectId, progress);
+  };
+
   const shareProjectWithClient = (projectId: string, _clientId?: string) => {
     updateProjectStatus(projectId, 'pending_client');
     // Aquí se enviaría una notificación al cliente
@@ -183,6 +191,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     addProject,
     addAndShareProject,
     updateProjectStatus,
+    updateProjectProgress,
     shareProjectWithClient,
     approveProject,
     rejectProject,

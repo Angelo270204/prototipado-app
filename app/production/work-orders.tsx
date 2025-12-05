@@ -26,13 +26,24 @@ export default function ProductionWorkOrdersScreen() {
   const router = useRouter();
   const { unreadCount } = useAuth();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
+  const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState('');
   const [operatorName, setOperatorName] = useState('');
 
-  const filteredOrders = selectedFilter === 'all'
+  // Filtrado por estado y prioridad
+  let filteredOrders = selectedFilter === 'all'
     ? mockWorkOrders
     : mockWorkOrders.filter(wo => wo.status === selectedFilter);
+  
+  if (selectedPriorityFilter !== 'all') {
+    filteredOrders = filteredOrders.filter(wo => {
+      if (selectedPriorityFilter === 'high') return wo.priority === 'high';
+      if (selectedPriorityFilter === 'medium') return wo.priority === 'medium' || wo.priority === 'normal';
+      if (selectedPriorityFilter === 'low') return wo.priority === 'low';
+      return true;
+    });
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -94,6 +105,31 @@ export default function ProductionWorkOrdersScreen() {
     }
   };
 
+  const handleScanQR = () => {
+    Alert.alert(
+      '📱 Escanear QR para Trazabilidad',
+      'Escanea el código QR del componente para ver su historial completo',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Simular Escaneo', 
+          onPress: () => {
+            Alert.alert(
+              '📋 Historial del Componente',
+              'ID: COMP-HSE-2024-001\n\n' +
+              '✅ Recibido: 15/Nov/2024\n' +
+              '✅ Inspección: 16/Nov/2024\n' +
+              '✅ Ensamblaje iniciado: 18/Nov/2024\n' +
+              '⏳ En proceso: Paso 4 de 10\n\n' +
+              'Operario: Roberto Castillo\n' +
+              'Tiempo transcurrido: 2h 15min'
+            );
+          }
+        },
+      ]
+    );
+  };
+
   const handleCreateWorkOrder = () => {
     if (selectedProject && operatorName) {
       Alert.alert(
@@ -113,6 +149,13 @@ export default function ProductionWorkOrdersScreen() {
     { key: 'pending', label: 'Pendientes', count: mockWorkOrders.filter(wo => wo.status === 'pending').length },
     { key: 'in_progress', label: 'En Progreso', count: mockWorkOrders.filter(wo => wo.status === 'in_progress').length },
     { key: 'completed', label: 'Completadas', count: mockWorkOrders.filter(wo => wo.status === 'completed').length },
+  ];
+
+  const priorityFilters = [
+    { key: 'all', label: 'Todas', icon: '📊' },
+    { key: 'high', label: '🔴 Alta', icon: '🔴' },
+    { key: 'medium', label: '🟡 Media', icon: '🟡' },
+    { key: 'low', label: '🔵 Baja', icon: '🔵' },
   ];
 
   return (
@@ -160,14 +203,40 @@ export default function ProductionWorkOrdersScreen() {
         </ScrollView>
       </View>
 
-      {/* Create Button */}
-      <View style={styles.createButtonContainer}>
+      {/* Priority Filters - Prominentes para test de usabilidad */}
+      <View style={styles.priorityFiltersContainer}>
+        <Text style={styles.priorityFilterLabel}>Filtrar por Prioridad:</Text>
+        <View style={styles.priorityFiltersRow}>
+          {priorityFilters.map((filter) => (
+            <TouchableOpacity
+              key={filter.key}
+              style={[
+                styles.priorityChip,
+                selectedPriorityFilter === filter.key && styles.priorityChipActive,
+              ]}
+              onPress={() => setSelectedPriorityFilter(filter.key as any)}
+            >
+              <Text style={styles.priorityChipText}>{filter.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Quick Actions: Create & Scan QR */}
+      <View style={styles.quickActionsContainer}>
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => setShowCreateModal(true)}
         >
           <Ionicons name="add-circle" size={20} color={Colors.base.whitePrimary} />
           <Text style={styles.createButtonText}>Crear Nueva Orden</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.scanQRButton}
+          onPress={handleScanQR}
+        >
+          <Ionicons name="qr-code-outline" size={20} color={Colors.base.blackPrimary} />
+          <Text style={styles.scanQRButtonText}>Escanear QR</Text>
         </TouchableOpacity>
       </View>
 
@@ -389,11 +458,52 @@ const styles = StyleSheet.create({
     color: Colors.base.whitePrimary,
     fontWeight: Typography.weights.semibold,
   },
+  // Priority Filters Styles
+  priorityFiltersContainer: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.grays.light,
+  },
+  priorityFilterLabel: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.semibold,
+    color: Colors.text.secondary,
+    marginBottom: Spacing.xs,
+  },
+  priorityFiltersRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  priorityChip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: 16,
+    backgroundColor: Colors.base.whitePrimary,
+    borderWidth: 1,
+    borderColor: Colors.grays.medium,
+  },
+  priorityChipActive: {
+    backgroundColor: Colors.base.blackPrimary,
+    borderColor: Colors.base.blackPrimary,
+  },
+  priorityChipText: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.medium,
+    color: Colors.base.blackPrimary,
+  },
+  // Quick Actions Container
+  quickActionsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+  },
   createButtonContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
   },
   createButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -405,6 +515,21 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
     color: Colors.base.whitePrimary,
+    marginLeft: Spacing.sm,
+  },
+  scanQRButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.functional.info,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.md,
+  },
+  scanQRButtonText: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.semibold,
+    color: Colors.base.blackPrimary,
     marginLeft: Spacing.sm,
   },
   content: {
