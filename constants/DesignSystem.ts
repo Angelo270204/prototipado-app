@@ -21,10 +21,10 @@ export const Colors = {
 
   // 3. COLORES FUNCIONALES (Estados del sistema)
   functional: {
-    success: '#9CFF2E',         // Verde neón - Aprobado, operaciones exitosas
-    error: '#FF6B6B',           // Rojo suave - Pendiente Revisión, errores
-    warning: '#FFE249',         // Amarillo brillante - Pendiente Revisión (alternativo)
-    info: '#4A9EFF',            // Azul brillante - En Validación, información
+    success: '#10B981',         // Verde esmeralda - Aprobado, operaciones exitosas
+    error: '#EF4444',           // Rojo coral - Pendiente Revisión, errores
+    warning: '#F59E0B',         // Naranja ámbar - Pendiente Revisión (alternativo)
+    info: '#2563EB',            // Azul profesional - En Validación, información
   },
 
   // FONDOS
@@ -59,55 +59,55 @@ export const Colors = {
   
   // ESTADOS
   success: {
-    main: '#9FFF7A',            // Verde industrial
-    light: '#B5FF94',           // Verde claro
-    dark: '#7FE05A',            // Verde oscuro
-    background: '#E8FFE0',      // Fondo suave
+    main: '#10B981',            // Verde esmeralda
+    light: '#34D399',           // Verde claro
+    dark: '#059669',            // Verde oscuro
+    background: '#D1FAE5',      // Fondo suave
   },
   
   error: {
-    main: '#FF4B4B',            // Rojo alerta
-    light: '#FF6B6B',           // Rojo claro
-    dark: '#E03333',            // Rojo oscuro
-    background: '#FFE8E8',      // Fondo suave
+    main: '#EF4444',            // Rojo coral
+    light: '#F87171',           // Rojo claro
+    dark: '#DC2626',            // Rojo oscuro
+    background: '#FEE2E2',      // Fondo suave
   },
   
   warning: {
-    main: '#F4FF5E',            // Amarillo
-    light: '#F7FF8A',           // Amarillo claro
-    dark: '#E0EB3A',            // Amarillo oscuro
-    background: '#FFFEF0',      // Fondo suave
+    main: '#F59E0B',            // Naranja ámbar
+    light: '#FBBF24',           // Naranja claro
+    dark: '#D97706',            // Naranja oscuro
+    background: '#FEF3C7',      // Fondo suave
   },
   
   info: {
-    main: '#4A90E2',            // Azul funcional
-    light: '#6BA5E8',           // Azul claro
-    dark: '#3A7BC8',            // Azul oscuro
-    background: '#E8F4FF',      // Fondo suave
+    main: '#2563EB',            // Azul profesional
+    light: '#3B82F6',           // Azul claro
+    dark: '#1D4ED8',            // Azul oscuro
+    background: '#DBEAFE',      // Fondo suave
   },
   
   // INTERACCIÓN
-  focus: '#4A90E2',             // Color de foco - azul funcional
-  selected: '#E8F4FF',          // Fondo de selección
+  focus: '#2563EB',             // Color de foco - azul profesional
+  selected: '#DBEAFE',          // Fondo de selección
   hover: '#E8E8E8',             // Hover genérico
   active: '#D9D9D9',            // Estado activo
   
   // PRIORIDADES (para órdenes de trabajo)
   priority: {
-    urgent: '#FF4B4B',          // Urgente - rojo
-    high: '#F4FF5E',            // Alta - amarillo
-    medium: '#4A90E2',          // Media - azul
-    low: '#4A4A4A',             // Baja - gris oscuro
-    normal: '#9FFF7A',          // Normal - verde
+    urgent: '#EF4444',          // Urgente - rojo coral
+    high: '#F59E0B',            // Alta - naranja ámbar
+    medium: '#2563EB',          // Media - azul profesional
+    low: '#6B7280',             // Baja - gris medio
+    normal: '#10B981',          // Normal - verde esmeralda
   },
   
   // ESTADOS DE TRABAJO
   status: {
-    pending: '#F4FF5E',         // Pendiente - amarillo
-    inProgress: '#4A90E2',      // En progreso - azul
-    completed: '#9FFF7A',       // Completado - verde
-    cancelled: '#4A4A4A',       // Cancelado - gris
-    review: '#4A90E2',          // En revisión - azul
+    pending: '#F59E0B',         // Pendiente - naranja ámbar
+    inProgress: '#2563EB',      // En progreso - azul profesional
+    completed: '#10B981',       // Completado - verde esmeralda
+    cancelled: '#6B7280',       // Cancelado - gris medio
+    review: '#2563EB',          // En revisión - azul profesional
   },
 
   // COLORES ESPECÍFICOS PARA ROLES
