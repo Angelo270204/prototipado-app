@@ -1,9 +1,13 @@
 /**
  * Operator Work Orders Screen
  * Lista de órdenes de trabajo para operarios - Angelo Operador
+ * 
+ * 🧪 EXPERIMENTO A/B: Botón QR - Header vs FAB
+ * - Variante A (Control): Botón en header superior derecha
+ * - Variante B (Experimental): FAB flotante inferior derecha
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,9 +21,11 @@ import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/DesignSystem';
 import { WorkOrderCard } from '@/components/molecules/WorkOrderCard';
 import NotificationBadge from '@/components/molecules/NotificationBadge';
+import { FloatingActionButton } from '@/components/molecules/FloatingActionButton';
 import { mockWorkOrders } from '@/data/mockData';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExperimentVariant, useABTesting } from '@/contexts/ABTesting/ABTestingContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function OperatorWorkOrdersScreen() {
@@ -28,6 +34,11 @@ export default function OperatorWorkOrdersScreen() {
   const { notifications, markNotificationAsRead, unreadCount } = useAuth();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'pending' | 'in_progress'>('all');
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // 🧪 A/B Testing: Obtener variante del experimento
+  const { trackEvent } = useABTesting();
+  const qrButtonVariant = useExperimentVariant('qr_button_location');
+  const showFAB = qrButtonVariant === 'B'; // Variante B = FAB flotante
 
   const filters = [
     { key: 'all', label: 'Todas' },
@@ -43,6 +54,30 @@ export default function OperatorWorkOrdersScreen() {
   const { projects } = useApp();
   const operatorProjects = projects.filter(p => p.sharedRoles?.includes('operator'));
 
+  // 🧪 Trackear vista de pantalla al cargar (solo cuando variante está asignada)
+  useEffect(() => {
+    if (qrButtonVariant) {
+      trackEvent('qr_button_location', 'screen_viewed', {
+        variant: qrButtonVariant,
+        filterApplied: selectedFilter,
+        ordersCount: filteredOrders.length,
+      });
+    }
+  }, [qrButtonVariant]);
+
+  // 🧪 Handler para botón QR con tracking
+  const handleQRScanPress = () => {
+    // Trackear el click antes de navegar
+    trackEvent('qr_button_location', 'qr_button_clicked', {
+      variant: qrButtonVariant,
+      buttonType: showFAB ? 'fab' : 'header',
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Navegar al escáner
+    router.push('/operator/qr-scanner');
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -57,13 +92,16 @@ export default function OperatorWorkOrdersScreen() {
               count={unreadCount}
               onPress={() => setShowNotifications(true)}
             />
-            <TouchableOpacity onPress={() => router.push('/operator/qr-scanner')}>
-              <View style={styles.scanButton}>
-                <Ionicons name="qr-code-outline" size={20} color={Colors.base.whitePrimary} />
-                <View style={{ width: 6 }} />
-                <Text style={styles.scanButtonText}>Escanear</Text>
-              </View>
-            </TouchableOpacity>
+            {/* 🧪 Variante A: Botón en Header (solo si NO es variante B) */}
+            {!showFAB && (
+              <TouchableOpacity onPress={handleQRScanPress} testID="qr-button-header">
+                <View style={styles.scanButton}>
+                  <Ionicons name="qr-code-outline" size={20} color={Colors.base.whitePrimary} />
+                  <View style={{ width: 6 }} />
+                  <Text style={styles.scanButtonText}>Escanear</Text>
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -284,6 +322,21 @@ export default function OperatorWorkOrdersScreen() {
           <Text style={styles.navLabel}>Perfil</Text>
         </TouchableOpacity>
       </View>
+
+      {/* 🧪 Variante B: FAB (Floating Action Button) */}
+      {showFAB && (
+        <FloatingActionButton
+          onPress={handleQRScanPress}
+          icon="qr-code-outline"
+          color={Colors.functional.success}
+          iconColor={Colors.base.whitePrimary}
+          size={64}
+          iconSize={28}
+          bottom={90}
+          right={20}
+          testID="qr-button-fab"
+        />
+      )}
     </SafeAreaView>
   );
 }
